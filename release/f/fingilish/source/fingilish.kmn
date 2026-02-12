@@ -6,14 +6,12 @@ c Source Keyboard File: KBDUS.DLL
 c Source KeyboardID: 00000409
 c
 c 
-
-store(&VERSION) '10.0'
-store(&NAME) 'US Basic'
-store(&VISUALKEYBOARD) 'basic_kbdus.kvks'
+store(&NAME) 'Phonetic Persian'
+store(&VISUALKEYBOARD) 'fingilish.kvks'
 store(&BITMAP) 'basic_kbdus.ico'
-store(&LAYOUTFILE) 'basic_kbdus.keyman-touch-layout'
+store(&LAYOUTFILE) 'fingilish.keyman-touch-layout'
 store(&COPYRIGHT) '© 2008-2020 SIL International'
-store(&KEYBOARDVERSION) '1.2'
+store(&KEYBOARDVERSION) '1.0'
 store(&TARGETS) 'any'
 
 begin Unicode > use(main)
