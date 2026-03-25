@@ -1,51 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <Package>
   <System>
-    <KeymanDeveloperVersion>13.0.107.0</KeymanDeveloperVersion>
-    <FileVersion>7.0</FileVersion>
+    <KeymanDeveloperVersion>18.0.245.0</KeymanDeveloperVersion>
+    <FileVersion>12.0</FileVersion>
   </System>
   <Options>
-    <ExecuteProgram></ExecuteProgram>
+    <ExecuteProgram/>
     <ReadMeFile>readme.htm</ReadMeFile>
-    <MSIFileName></MSIFileName>
-    <MSIOptions></MSIOptions>
-    <FollowKeyboardVersion/>
     <LicenseFile>..\LICENSE.md</LicenseFile>
+    <MSIFileName/>
+    <MSIOptions/>
+    <FollowKeyboardVersion/>
   </Options>
   <StartMenu>
-    <Folder></Folder>
+    <Folder/>
     <Items/>
   </StartMenu>
   <Info>
     <Name URL="">Phonetic Persian</Name>
     <Copyright URL="">© 2008-2020 SIL International</Copyright>
     <Author URL="steadythrone376@gmail.com">Mattin Tasbihgoo</Author>
-    <Version URL="1.0">1.0</Version>
-    <Description>This keyboard is designed for the Persian language. It will be
+    <Version URL="1.0"/>
+    <Description URL="">This keyboard is designed for the Persian language. It will be
 useful for other languages that require phonetic input.</Description>
   </Info>
   <Files>
     <File>
       <Name>..\build\fingilish.kmx</Name>
-      <Description></Description>
+      <Description/>
       <CopyLocation>0</CopyLocation>
       <FileType>.kmx</FileType>
     </File>
     <File>
       <Name>..\build\fingilish.js</Name>
-      <Description></Description>
+      <Description/>
       <CopyLocation>0</CopyLocation>
       <FileType>.js</FileType>
     </File>
     <File>
       <Name>..\build\fingilish.kvk</Name>
-      <Description></Description>
+      <Description/>
       <CopyLocation>0</CopyLocation>
       <FileType>.kvk</FileType>
     </File>
     <File>
       <Name>readme.htm</Name>
-      <Description></Description>
+      <Description/>
       <CopyLocation>0</CopyLocation>
       <FileType>.htm</FileType>
     </File>
@@ -69,22 +69,38 @@ useful for other languages that require phonetic input.</Description>
     </File>
     <File>
       <Name>..\LICENSE.md</Name>
-      <Description></Description>
+      <Description/>
       <CopyLocation>0</CopyLocation>
       <FileType>.md</FileType>
+    </File>
+    <File>
+      <Name>..\build\fingilish.model.js</Name>
+      <Description>Fingilish lexical model</Description>
+      <CopyLocation>0</CopyLocation>
+      <FileType>.js</FileType>
+    </File>
+    <File>
+      <Name>words\fingilish.wordlist.tsv</Name>
+      <Description>Fingilish wordlist</Description>
+      <CopyLocation>0</CopyLocation>
+      <FileType>.tsv</FileType>
     </File>
   </Files>
   <Keyboards>
     <Keyboard>
-      <Name>US Basic</Name>
       <ID>fingilish</ID>
-      <Version>1.0</Version>
       <Languages>
         <Language ID="fa">Persian</Language>
       </Languages>
-  </Keyboard>
+    </Keyboard>
   </Keyboards>
+  <LexicalModels>
+    <LexicalModel>
+      <ID>fingilish</ID>
+      <Languages>
+        <Language ID="fa">Persian</Language>
+      </Languages>
+    </LexicalModel>
+  </LexicalModels>
   <Strings/>
-  <RelatedPackages>
-  </RelatedPackages>
 </Package>

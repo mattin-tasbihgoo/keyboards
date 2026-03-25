@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package>
+  <System>
+    <KeymanDeveloperVersion>13.0.107.0</KeymanDeveloperVersion>
+    <FileVersion>7.0</FileVersion>
+  </System>
+
+  <Options>
+    <ReadMeFile>readme.htm</ReadMeFile>
+    <LicenseFile>..\LICENSE.md</LicenseFile>
+  </Options>
+
+  <StartMenu>
+    <Folder></Folder>
+    <Items/>
+  </StartMenu>
+
+  <Info>
+    <Name>Mattin NEW Fingilish Model</Name>
+    <Copyright URL="">© 2008-2026 SIL International</Copyright>
+    <Author URL="steadythrone376@gmail.com">Mattin Tasbihgoo</Author>
+    <Version URL="1.0">1.0</Version>
+    <Description>Lexical model for Fingilish to Persian whole-word prediction.</Description>
+  </Info>
+
+  <Files>
+    <File>
+      <Name>..\build\mattin.fa.fingilish.model.js</Name>
+      <Description></Description>
+      <CopyLocation>0</CopyLocation>
+      <FileType>.js</FileType>
+    </File>
+    <File>
+      <Name>readme.htm</Name>
+      <Description></Description>
+      <CopyLocation>0</CopyLocation>
+      <FileType>.htm</FileType>
+    </File>
+    <File>
+      <Name>..\LICENSE.md</Name>
+      <Description></Description>
+      <CopyLocation>0</CopyLocation>
+      <FileType>.md</FileType>
+    </File>
+  </Files>
+
+  <LexicalModels>
+    <LexicalModel>
+      <Name>Mattin NEW Fingilish Model</Name>
+      <ID>mattin_fa_fingilish</ID>
+      <Version>1.0</Version>
+      <RTL>true</RTL>
+      <Languages>
+        <Language ID="fa">Persian</Language>
+      </Languages>
+    </LexicalModel>
+  </LexicalModels>
+
+  <Strings/>
+  <RelatedPackages>
+  </RelatedPackages>
+</Package>
