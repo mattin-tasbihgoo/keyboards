@@ -1,4 +1,4 @@
-word	freq	latin
+persian	freq	latin
 که	1497746	ke
 رو	1348950	ro
 به	1314499	be
@@ -72,12 +72,12 @@ word	freq	latin
 یا	120098	ya
 شد	119664	shod
 بله	115728	blh
-هی	115197	hey
+هی	115197	hy
 دوست	113690	doost
 های	113331	hay
 منو	112155	mnv
 بیا	111310	bia
-دست	110160	dast
+دست	110160	dst
 اینکه	110042	aynkh
 سلام	109041	salam
 کجا	108314	koja
@@ -89,7 +89,7 @@ word	freq	latin
 مثل	102383	msl
 خوبه	102349	khube
 همین	99569	hmyn
-بده	99323	bade
+بده	99323	bede
 کی	99273	ki
 پیدا	98154	pyda
 هیچ	98065	hych
@@ -120,7 +120,7 @@ word	freq	latin
 خونه	76301	khune
 شاید	76004	shayad
 بودم	75742	bvdm
-سر	75094	sar
+سر	75094	sr
 چیز	74402	chyz
 باش	74125	bash
 هستم	73906	hstm
@@ -159,7 +159,7 @@ word	freq	latin
 چی؟	57588	chy
 صبر	56976	sbr
 تنها	56428	tnha
-اسم	56199	esm
+اسم	56199	asm
 متاسفم	56061	mtasfm
 باشی	55895	bashy
 سال	55722	sal
@@ -176,7 +176,7 @@ word	freq	latin
 خدای	52581	khday
 چطور	51633	chetoor
 بوده	51578	bvdh
-ببخشید	51472	bebakhshid
+ببخشید	51472	bbkhshyd
 بدم	51363	bdm
 خوبی	50655	khvby
 اونو	50255	avnv
@@ -186,7 +186,7 @@ word	freq	latin
 گفتم	49387	goftam
 بدی	48752	bdy
 بگم	48461	bgm
-خواهش	48353	khahesh
+خواهش	48353	khvahsh
 برم	48250	brm
 بر	48103	br
 عزیزم	48060	zyzm
@@ -199,13 +199,13 @@ word	freq	latin
 بازی	46031	bazy
 قبل	45729	ghbl
 گفت	44840	goft
-آدم	44773	adam
+آدم	44773	adm
 میتونم	44592	mitonam
 نفر	44571	nfr
 شو	44514	shv
 مادر	44365	madr
 میگم	44074	mygm
-پول	43874	pool
+پول	43874	pvl
 کنین	43853	knyn
 بار	43609	bar
 دنبال	43604	dnbal
@@ -276,7 +276,7 @@ word	freq	latin
 اتفاقی	34874	atfaghy
 زنده	34804	zndh
 ازت	34484	azt
-میکنیم	33956	mikonim
+میکنیم	33956	myknym
 ماشین	33936	mashin
 جایی	33789	jayy
 بین	33775	byn
@@ -287,7 +287,7 @@ word	freq	latin
 شدی	33156	shodi
 زن	33074	zn
 دور	32924	dvr
-آروم	32713	aroom
+آروم	32713	arvm
 هیچوقت	32638	hychvght
 بهتر	32490	bhtr
 عالیه	32338	alyh
@@ -342,7 +342,7 @@ word	freq	latin
 نشون	27629	nshvn
 لحظه	27487	lahze
 رفیق	27227	rfygh
-دل	27201	del
+دل	27201	dl
 صبح	27193	sobh
 سمت	27188	smt
 کارو	27009	karv
@@ -435,7 +435,7 @@ word	freq	latin
 بشی	20688	bshy
 میتونیم	20661	mytvnym
 نمیخوام	20547	nemikham
-بشم	20497	besham
+بشم	20497	bshm
 ماه	20398	mah
 میره	20353	mire
 خوای	20344	khvay
@@ -474,7 +474,7 @@ word	freq	latin
 اه	18682	ah
 منتظر	18682	mntzr
 خانواده	18674	khanvadh
-سریع	18659	sari
+سریع	18659	sry
 لباس	18654	lbas
 شبیه	18635	shbyh
 غیر	18617	ghyr
@@ -512,9 +512,9 @@ word	freq	latin
 بشین	17497	beshin
 دارین	17480	daryn
 آخر	17448	akhr
-خوشحالم	17415	khoshalam
+خوشحالم	17415	khvshhalm
 عنوان	17406	nvan
-مراقب	17370	morageb
+مراقب	17370	mraghb
 کل	17357	kl
 رد	17328	rd
 کشتی	17175	kshty
@@ -533,8 +533,8 @@ word	freq	latin
 عاشق	16775	ashgh
 اینقدر	16713	aynghdr
 بودیم	16705	bvdym
-متشکرم	16582	motashakeram
-چشم	16546	cheshm
+متشکرم	16582	mtshkrm
+چشم	16546	chshm
 کس	16501	ks
 اینطور	16481	ayntvr
 احتمالا	16376	ahtmala
@@ -557,7 +557,7 @@ word	freq	latin
 گیر	15862	gyr
 میری	15837	miri
 تیم	15795	tym
-بیخیال	15787	bikheyal
+بیخیال	15787	bykhyal
 زده	15767	zdh
 شنیدم	15731	shnydm
 خداحافظ	15698	khdahafz
@@ -573,7 +573,7 @@ word	freq	latin
 میشن	15434	myshn
 خارج	15307	kharj
 اینجاست	15295	aynjast
-فهمیدم	15259	fahmeedam
+فهمیدم	15259	fhmydm
 میکرد	15231	mykrd
 داستان	15220	dastan
 قدرت	15208	ghdrt
@@ -615,7 +615,7 @@ word	freq	latin
 خواب	14401	khvab
 نکنم	14394	nknm
 بزار	14369	bzar
-مدرسه	14311	madrese
+مدرسه	14311	mdrsh
 شده؟	14260	shdh
 مردی	14259	mrdy
 راجع	14252	raj
@@ -666,7 +666,7 @@ word	freq	latin
 بعدا	12882	bda
 برگرد	12849	brgrd
 کمی	12842	kmy
-بدونم	12834	bedoonam
+بدونم	12834	bdvnm
 خوبیه	12829	khvbyh
 خورده	12815	khvrdh
 داشتن	12760	dashtn
@@ -674,7 +674,7 @@ word	freq	latin
 هدف	12718	hdf
 گرفتن	12656	grftn
 دوتا	12601	dvta
-بخوای	12579	bekhai
+بخوای	12579	bkhvay
 نمیتونه	12575	nmytvnh
 صدا	12572	sda
 سری	12551	sry
@@ -696,7 +696,7 @@ word	freq	latin
 بعدی	12283	bdy
 پرونده	12251	prvndh
 اینکار	12244	aynkar
-گرفتی	12231	gerefti
+گرفتی	12231	grfty
 افتخار	12199	aftkhar
 اوه،	12181	avh
 شماها	12174	shmaha
@@ -782,7 +782,7 @@ word	freq	latin
 بدید	10531	bdyd
 بسه	10516	bsh
 هستین	10504	hstyn
-بکن	10502	bokon
+بکن	10502	bkn
 زدی	10478	zdy
 بیشتری	10470	byshtry
 مواد	10452	mvad
@@ -815,7 +815,7 @@ word	freq	latin
 نامه	9993	namh
 بدست	9967	bdst
 روشن	9946	rvshn
-ولش	9945	velesh
+ولش	9945	vlsh
 خسته	9941	khsth
 بکشه	9908	bkshh
 هرچی	9905	hrchy
@@ -836,7 +836,7 @@ word	freq	latin
 دیدن	9681	dydn
 میخوان	9597	mikhan
 ارتش	9595	artsh
-قلب	9593	ghalb
+قلب	9593	ghlb
 میدیم	9587	mydym
 فشار	9578	fshar
 دید	9576	did
@@ -848,7 +848,7 @@ word	freq	latin
 تقصیر	9492	tghsyr
 ساکت	9459	sakt
 اونجاست	9444	avnjast
-آخه	9442	akhe
+آخه	9442	akhh
 انتظار	9442	antzar
 خبره	9401	khbrh
 میبینی	9395	mybyny
@@ -896,7 +896,7 @@ word	freq	latin
 چنین	8804	chnyn
 ذهن	8802	zhn
 ول	8801	vl
-بخور	8774	bokhor
+بخور	8774	bkhvr
 شرط	8770	shrt
 نیستن	8757	nystn
 چجوری	8719	chjvry
@@ -932,7 +932,7 @@ word	freq	latin
 سیستم	8429	systm
 حل	8410	hl
 ببینه	8402	bbynh
-فهمیدی	8387	fahmeedi
+فهمیدی	8387	fhmydy
 میای	8382	miai
 وضعیت	8371	vzyt
 عجب	8367	jb
@@ -1011,7 +1011,7 @@ word	freq	latin
 تون	7811	tvn
 بگیرش	7783	bgyrsh
 ساده	7781	sadh
-میکنید	7780	mikonid
+میکنید	7780	myknyd
 مسیح	7778	msyh
 دارند	7777	darnd
 اشکالی	7772	ashkaly
@@ -1084,7 +1084,7 @@ word	freq	latin
 بوی	7033	bvy
 پاک	7027	pak
 خواهیم	7022	khvahym
-بخواد	7018	bekhad
+بخواد	7018	bkhvad
 نیویورک	7009	nyvyvrk
 هات	7005	hat
 هواپیما	7002	hvapyma
@@ -1109,7 +1109,7 @@ word	freq	latin
 بمب	6869	bmb
 همگی	6864	hmgy
 خورد	6846	khvrd
-ولم	6842	velam
+ولم	6842	vlm
 حسابی	6833	hsaby
 مربوط	6833	mrbvt
 کردید	6795	krdyd
@@ -1138,7 +1138,7 @@ word	freq	latin
 اونی	6654	avny
 تفنگ	6652	tfng
 بخوام	6651	bkhvam
-غلطی	6651	ghalati
+غلطی	6651	ghlty
 رییس	6646	ryys
 بحث	6642	bhs
 کجاست؟	6636	kjast
@@ -1195,7 +1195,7 @@ word	freq	latin
 ندارن	6397	ndarn
 احمقانه	6396	ahmghanh
 مکان	6393	mkan
-گذاشتم	6392	gozashtam
+گذاشتم	6392	gzashtm
 حدود	6391	hdvd
 آزمایش	6390	azmaysh
 بفرمایید	6389	bfrmayyd
@@ -1280,7 +1280,7 @@ word	freq	latin
 تمیز	5972	tmyz
 هری	5967	hry
 شکر	5961	shkr
-بخواب	5957	bekhab
+بخواب	5957	bkhvab
 دوربین	5955	dvrbyn
 جنده	5952	jndh
 سارا	5934	sara
@@ -1331,7 +1331,7 @@ word	freq	latin
 شغل	5671	shghl
 میرن	5663	myrn
 کسایی	5661	ksayy
-میخورم	5659	mikhooram
+میخورم	5659	mykhvrm
 جلسه	5648	jlsh
 مبارک	5634	mbark
 میتونن	5633	mytvnn
@@ -1490,7 +1490,7 @@ word	freq	latin
 شگفت	4932	shgft
 تایید	4929	tayyd
 ساحل	4928	sahl
-حواست	4920	havaset
+حواست	4920	hvast
 نگاهی	4916	ngahy
 هیجان	4915	hyjan
 پیغام	4899	pygham
@@ -1520,7 +1520,7 @@ word	freq	latin
 بدونه	4795	bdvnh
 وسیله	4795	vsylh
 بازش	4789	bazsh
-خوردم	4789	khordam
+خوردم	4789	khvrdm
 بینمت	4785	bynmt
 کشید	4780	kshyd
 ببره	4779	bbrh
@@ -1569,7 +1569,7 @@ word	freq	latin
 برگشتی	4638	brgshty
 شین	4635	shyn
 عذر	4632	zr
-اوکی	4630	okay
+اوکی	4630	avky
 کارها	4630	karha
 بخوریم	4628	bkhvrym
 ببرم	4627	bbrm
@@ -1625,7 +1625,7 @@ word	freq	latin
 باب	4436	bab
 آرامش	4435	aramsh
 بذارید	4431	bzaryd
-رفتیم	4427	raftim
+رفتیم	4427	rftym
 وسایل	4422	vsayl
 بخشی	4410	bkhshy
 کوتاه	4409	kvtah
@@ -1669,7 +1669,7 @@ word	freq	latin
 درگیر	4282	drgyr
 زبان	4281	zban
 شاهد	4278	shahd
-میفهمم	4255	mifahmam
+میفهمم	4255	myfhmm
 برگشته	4254	brgshth
 کاریه	4247	karyh
 روانی	4243	rvany
@@ -1907,7 +1907,7 @@ word	freq	latin
 تحقیق	3579	thghygh
 تشخیص	3572	tshkhys
 هرکسی	3571	hrksy
-ببخش	3566	bebakhsh
+ببخش	3566	bbkhsh
 سالها	3566	salha
 دیگران	3564	dygran
 کارهایی	3564	karhayy
@@ -2268,7 +2268,7 @@ word	freq	latin
 نمیره	2883	nmyrh
 ویروس	2882	vyrvs
 کاترین	2880	katryn
-دوستت	2876	doostet
+دوستت	2876	dvstt
 حواسم	2875	hvasm
 توافق	2874	tvafgh
 کشه	2872	kshh
@@ -2306,7 +2306,7 @@ word	freq	latin
 مصاحبه	2816	msahbh
 گردم	2816	grdm
 نمیدونیم	2812	nmydvnym
-بپرس	2804	bepors
+بپرس	2804	bprs
 شرقی	2800	shrghy
 هدایت	2799	hdayt
 ایالات	2798	ayalat
@@ -2395,7 +2395,7 @@ word	freq	latin
 ریچل	2666	rychl
 کلا	2665	kla
 شلوغه	2658	shlvghh
-عاشقتم	2658	asheghetam
+عاشقتم	2658	ashghtm
 هند	2657	hnd
 آسمان	2654	asman
 دبیرستان	2649	dbyrstan
@@ -2429,7 +2429,7 @@ word	freq	latin
 خونی	2611	khvny
 میبرم	2608	mybrm
 آفتاب	2607	aftab
-زیباست	2606	zibast
+زیباست	2606	zybast
 هان؟	2605	han
 شکلی	2603	shkly
 عیبی	2601	yby
@@ -2729,7 +2729,7 @@ word	freq	latin
 رهبری	2246	rhbry
 گشت	2246	gsht
 حروم	2243	hrvm
-پرسیدم	2243	porseedam
+پرسیدم	2243	prsydm
 لب	2241	lb
 بشنوی	2240	bshnvy
 چشمات	2240	chshmat
@@ -2897,7 +2897,7 @@ word	freq	latin
 نمیذارم	2056	nmyzarm
 بابای	2054	babay
 ترسم	2053	trsm
-موندم	2053	moondam
+موندم	2053	mvndm
 مشخصه	2052	mshkhsh
 تپه	2051	tph
 راهنمایی	2050	rahnmayy
@@ -3290,7 +3290,7 @@ word	freq	latin
 لیاقت	1723	lyaght
 احتیاجی	1722	ahtyajy
 بازیه	1722	bazyh
-نفهمیدم	1721	nafahmeedam
+نفهمیدم	1721	nfhmydm
 نقره	1720	nghrh
 لاک	1719	lak
 نباشی	1719	nbashy
@@ -3661,7 +3661,7 @@ word	freq	latin
 مادربزرگ	1473	madrbzrg
 کوپر	1473	kvpr
 نیزه	1471	nyzh
-بپوش	1470	bepush
+بپوش	1470	bpvsh
 شیش	1468	shysh
 حمام	1467	hmam
 خطری	1467	khtry
@@ -4372,7 +4372,7 @@ word	freq	latin
 روراست	1138	rvrast
 یونانی	1137	yvnany
 ردینگتون	1136	rdyngtvn
-نشستم	1136	neshastam
+نشستم	1136	nshstm
 همشو	1136	hmshv
 هیتلر	1136	hytlr
 آشکار	1135	ashkar
@@ -4551,7 +4551,7 @@ word	freq	latin
 میکردند	1077	mykrdnd
 نمیارم	1077	nmyarm
 بگردی	1076	bgrdy
-ناراحتم	1076	narahatam
+ناراحتم	1076	narahtm
 ترتیبش	1075	trtybsh
 انگیزی	1074	angyzy
 بنویس	1074	bnvys
@@ -5194,7 +5194,7 @@ word	freq	latin
 میشه؟	880	myshh
 هرج	880	hrj
 چاله	880	chalh
-خوابیدم	879	khabeedam
+خوابیدم	879	khvabydm
 راهنما	879	rahnma
 ردیفه	879	rdyfh
 عشقه	879	shghh
@@ -6488,7 +6488,6 @@ word	freq	latin
 قبرستون	626	ghbrstvn
 میداری	626	mydary
 گابریل	626	gabryl
-ھ	626	?
 آگاهی	625	agahy
 اعتیاد	625	atyad
 بازیگری	625	bazygry
@@ -6636,7 +6635,6 @@ word	freq	latin
 سپاسگزارم	603	spasgzarm
 ویجی	603	vyjy
 کامله	603	kamlh
-؟	602	?
 استریت	602	astryt
 بخاطره	602	bkhatrh
 شوهرتون	602	shvhrtvn
@@ -7003,7 +7001,7 @@ word	freq	latin
 نایت	555	nayt
 نباشیم	555	nbashym
 هروئین	555	hrvyn
-بخند	554	bekhond
+بخند	554	bkhnd
 تبرئه	554	tbrh
 حالشو	554	halshv
 شدنی	554	shdny
@@ -7078,7 +7076,7 @@ word	freq	latin
 چنده؟	547	chndh
 گام	547	gam
 آگوست	546	agvst
-بلندشو	546	bolandsho
+بلندشو	546	blndshv
 بپیچ	546	bpych
 بیخود	546	bykhvd
 خستگی	546	khstgy
@@ -8298,7 +8296,6 @@ word	freq	latin
 اقلیم	421	aghlym
 شهاب	421	shhab
 صنعتی	421	snty
-ع	421	?
 مودبانه	421	mvdbanh
 مونت	421	mvnt
 پسند	421	psnd
@@ -8348,7 +8345,7 @@ word	freq	latin
 جلد	417	jld
 خمیر	417	khmyr
 رسیدند	417	rsydnd
-عه	417	e
+عه	417	h
 قربانیان	417	ghrbanyan
 محقق	417	mhghgh
 مدعی	417	mdy
@@ -10808,7 +10805,6 @@ word	freq	latin
 هزارتو	262	hzartv
 وول	262	vvl
 کنترلت	262	kntrlt
-ء	261	?
 الکتریسیته	261	alktrysyth
 امداد	261	amdad
 اونهمه	261	avnhmh
@@ -16017,7 +16013,7 @@ word	freq	latin
 بیافتید	125	byaftyd
 بیوفتم	125	byvftm
 جسدت	125	jsdt
-خندیدم	125	khandeedam
+خندیدم	125	khndydm
 دادلی	125	dadly
 داستانا	125	dastana
 دولین	125	dvlyn
@@ -18690,7 +18686,6 @@ word	freq	latin
 گارونا	96	garvna
 گرام	96	gram
 گشادت	96	gshadt
-۱	96	?
 آخه؟	95	akhh
 آدرست	95	adrst
 آکاتور	95	akatvr
@@ -19143,7 +19138,6 @@ word	freq	latin
 کفار	92	kfar
 گفتگویی	92	gftgvyy
 ییل	92	yyl
-۲	92	?
 آشکلیف	91	ashklyf
 آلک	91	alk
 آمبریج	91	ambryj
@@ -19391,7 +19385,6 @@ word	freq	latin
 گالو	90	galv
 یهودا	90	yhvda
 یونیون	90	yvnyvn
-۶	90	?
 آزادن	89	azadn
 اتوبوسه	89	atvbvsh
 اجتماعات	89	ajtmaat
@@ -19501,7 +19494,6 @@ word	freq	latin
 گذرا	89	gzra
 گردنشون	89	grdnshvn
 گرفتمشون	89	grftmshvn
-،	88	?
 آزادید	88	azadyd
 آشنام	88	ashnam
 آلمیتا	88	almyta
@@ -21005,7 +20997,6 @@ word	freq	latin
 گشوده	78	gshvdh
 گفتمش	78	gftmsh
 گوریه؟	78	gvryh
-۰	78	?
 آبیاری	77	abyary
 آره،فکر	77	arhfkr
 آرچ	77	arch
@@ -21830,7 +21821,6 @@ word	freq	latin
 گلوشو	73	glvshv
 گمبل	73	gmbl
 گیاهخوار	73	gyahkhvar
-۱۰	73	?
 آااه	72	ah
 آبسولم	72	absvlm
 آسمانها	72	asmanha
@@ -22017,7 +22007,6 @@ word	freq	latin
 یاکوزا	72	yakvza
 یکهو	72	ykhv
 ییتس	72	yyts
-۳	72	?
 آوردیمش	71	avrdymsh
 بردتش	71	brdtsh
 خوندگی	71	khvndgy

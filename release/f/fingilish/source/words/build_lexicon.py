@@ -4,22 +4,28 @@
 """
 Build the Fingilish lexicon for Keyman.
 
-Input files (in the same folder as this script):
+Input files (same folder as this script):
   words_raw.csv       columns: word,count
   sentences_raw.csv   columns: sentence,count
 
-Output files (in the same folder):
-  fingilish.wordlist.tsv   → consumed by fingilish.model.ts (Keyman)
-  lexicon.tsv              → human-readable Persian→Latin mapping for review
-  blocklist.txt            → Latin tokens to never auto-convert
+Output files:
+  fingilish.wordlist.tsv   Latin keys -> consumed by Keyman trie model
+  persian_map.tsv          Latin key -> Persian word map (for kmn rules later)
+  lexicon.tsv              Human-readable Persian->Latin review file
+  blocklist.txt            Latin tokens to never auto-convert
 
-Intermediate data (words.tsv, sentences.tsv, normalized files, etc.) is
-kept in memory only and not written to disk.
+How the wordlist works:
+  The Keyman trie-1.0 model does prefix matching on the stored words.
+  The user types Latin (e.g. "sal"), the trie finds all entries starting
+  with "sal", and shows them as suggestions. The entry text is what gets
+  inserted when the user accepts.
 
-Usage:
-  python build_lexicon.py
+  Option B (current): wordlist stores Latin keys so the trie matches
+  naturally. The suggestion shown and inserted is Latin (e.g. "salam").
+  This confirms the pipeline works end-to-end.
 
-Run from any directory; paths are resolved relative to this script file.
+  Option A (next step): .kmn rules will intercept the accepted Latin
+  suggestion and replace it with Persian. persian_map.tsv has that data.
 """
 
 from __future__ import annotations
@@ -31,35 +37,34 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent
-SOURCE_DIR = BASE_DIR.parent
 
-WORDS_RAW      = BASE_DIR / "words_raw.csv"
-SENTENCES_RAW  = BASE_DIR / "sentences_raw.csv"
+WORDS_RAW     = BASE_DIR / "words_raw.csv"
+SENTENCES_RAW = BASE_DIR / "sentences_raw.csv"
 
-WORDLIST       = SOURCE_DIR / "fingilish.wordlist.tsv"
-LEXICON        = BASE_DIR / "lexicon.tsv"
-BLOCKLIST      = BASE_DIR / "blocklist.txt"
+WORDLIST    = BASE_DIR / "fingilish.wordlist.tsv"
+PERSIAN_MAP = BASE_DIR / "persian_map.tsv"
+LEXICON     = BASE_DIR / "lexicon.tsv"
+BLOCKLIST   = BASE_DIR / "blocklist.txt"
 
 
 # ---------------------------------------------------------------------------
-# Persian text normalization
+# Persian normalization
 # ---------------------------------------------------------------------------
 
 ARABIC_TO_PERSIAN = str.maketrans({
-    "ي": "ی",
-    "ك": "ک",
-    "ة": "ه",
-    "ۀ": "ه",
-    "أ": "ا",
-    "إ": "ا",
-    "ى": "ی",
+    "\u064a": "\u06cc",  # ي -> ی
+    "\u0643": "\u06a9",  # ك -> ک
+    "\u0629": "\u0647",  # ة -> ه
+    "\u06c0": "\u0647",  # ۀ -> ه
+    "\u0623": "\u0627",  # أ -> ا
+    "\u0625": "\u0627",  # إ -> ا
+    "\u0649": "\u06cc",  # ى -> ی
 })
-
-COMBINING_RE     = re.compile(r"[\u0640\u064B-\u065F\u0670\u06D6-\u06ED]")
-SPACE_PUNCT_RE   = re.compile(r"\s+([؟!،\.,:;])")
-MULTISPACE_RE    = re.compile(r"\s+")
-PERSIAN_WORD_RE  = re.compile(r"^[\u0600-\u06FF]+$")
-TOKEN_RE         = re.compile(r"[\u0600-\u06FF]+")
+COMBINING_RE    = re.compile(r"[\u0640\u064B-\u065F\u0670\u06D6-\u06ED]")
+SPACE_PUNCT_RE  = re.compile(r"\s+([؟!،\.,:;])")
+MULTISPACE_RE   = re.compile(r"\s+")
+PERSIAN_WORD_RE = re.compile(r"^[\u0600-\u06FF]+$")
+TOKEN_RE        = re.compile(r"[\u0600-\u06FF]+")
 
 
 def normalize(text: str) -> str:
@@ -78,17 +83,13 @@ def is_persian_word(word: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# CSV reading
+# IO
 # ---------------------------------------------------------------------------
 
 def read_csv(path: Path) -> list[dict[str, str]]:
     with path.open("r", encoding="utf-8-sig", newline="") as f:
         return list(csv.DictReader(f))
 
-
-# ---------------------------------------------------------------------------
-# TSV writing
-# ---------------------------------------------------------------------------
 
 def write_tsv(path: Path, headers: list[str], rows: list) -> None:
     with path.open("w", encoding="utf-8", newline="") as f:
@@ -98,7 +99,7 @@ def write_tsv(path: Path, headers: list[str], rows: list) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Build frequency tables (in memory)
+# Frequency tables
 # ---------------------------------------------------------------------------
 
 def load_word_counts() -> Counter:
@@ -129,12 +130,9 @@ def load_sentence_word_counts() -> Counter:
     return counts
 
 
-def merge_counts(word_counts: Counter, sentence_counts: Counter) -> list[tuple[str, int]]:
-    all_words = set(word_counts) | set(sentence_counts)
-    merged = [
-        (w, word_counts.get(w, 0) + sentence_counts.get(w, 0))
-        for w in all_words
-    ]
+def merge_counts(wc: Counter, sc: Counter) -> list[tuple[str, int]]:
+    all_words = set(wc) | set(sc)
+    merged = [(w, wc.get(w, 0) + sc.get(w, 0)) for w in all_words]
     merged.sort(key=lambda x: (-x[1], x[0]))
     return merged
 
@@ -143,416 +141,315 @@ def merge_counts(word_counts: Counter, sentence_counts: Counter) -> list[tuple[s
 # Transliteration
 # ---------------------------------------------------------------------------
 
-# Multi-character mappings are checked first (order matters).
 MULTI_CHAR_MAP: dict[str, str] = {
-    "خ": "kh",
-    "ش": "sh",
-    "چ": "ch",
-    "ژ": "zh",
-    "غ": "gh",
-    "ق": "gh",
+    "\u062e": "kh",  # خ
+    "\u0634": "sh",  # ش
+    "\u0686": "ch",  # چ
+    "\u0698": "zh",  # ژ
+    "\u063a": "gh",  # غ
+    "\u0642": "gh",  # ق
 }
 
-# Single-character fallback mappings.
-# Note: و / ه / ی have context-dependent pronunciations; these are defaults.
 SINGLE_CHAR_MAP: dict[str, str] = {
-    "ا": "a",
-    "آ": "a",
-    "ب": "b",
-    "پ": "p",
-    "ت": "t",
-    "ث": "s",
-    "ج": "j",
-    "ح": "h",
-    "د": "d",
-    "ذ": "z",
-    "ر": "r",
-    "ز": "z",
-    "س": "s",
-    "ص": "s",
-    "ض": "z",
-    "ط": "t",
-    "ظ": "z",
-    "ع": "",
-    "ف": "f",
-    "ک": "k",
-    "گ": "g",
-    "ل": "l",
-    "م": "m",
-    "ن": "n",
-    "و": "v",   # consonant default; handled as "o/oo/u" vowel in MANUAL
-    "ه": "h",
-    "ی": "y",
-    "ء": "",
+    "\u0627": "a",   # ا
+    "\u0622": "a",   # آ
+    "\u0628": "b",   # ب
+    "\u067e": "p",   # پ
+    "\u062a": "t",   # ت
+    "\u062b": "s",   # ث
+    "\u062c": "j",   # ج
+    "\u062d": "h",   # ح
+    "\u062f": "d",   # د
+    "\u0630": "z",   # ذ
+    "\u0631": "r",   # ر
+    "\u0632": "z",   # ز
+    "\u0633": "s",   # س
+    "\u0635": "s",   # ص
+    "\u0636": "z",   # ض
+    "\u0637": "t",   # ط
+    "\u0638": "z",   # ظ
+    "\u0639": "",    # ع
+    "\u0641": "f",   # ف
+    "\u06a9": "k",   # ک
+    "\u06af": "g",   # گ
+    "\u0644": "l",   # ل
+    "\u0645": "m",   # م
+    "\u0646": "n",   # ن
+    "\u0648": "v",   # و
+    "\u0647": "h",   # ه
+    "\u06cc": "y",   # ی
+    "\u0621": "",    # ء
 }
 
-# Manual overrides — these are the ground truth for common words.
-# The automated transliterator cannot reliably recover short vowels that
-# Persian orthography omits, so we enumerate the top vocabulary here.
-#
-# Convention used: match how Iranians actually type in Fingilish.
-#   - "aa" / "oo" / "ee" for long vowels (user can also type "a"/"o"/"i")
-#   - "kh", "sh", "ch", "gh", "zh" for digraphs
-#   - silent/helper vowels added where needed for readability
 MANUAL_LATIN: dict[str, str] = {
-    # ─── Top function words ──────────────────────────────────────────────
-    "که":       "ke",
-    "رو":       "ro",
-    "به":       "be",
-    "من":       "man",
-    "و":        "o",
-    "از":       "az",
-    "تو":       "to",
-    "اون":      "oon",
-    "این":      "in",
-    "یه":       "ye",
-    "می":       "mi",
-    "نه":       "na",
-    "با":       "ba",
-    "در":       "dar",
-    "ما":       "ma",
-    "هم":       "ham",
-    "بود":      "bood",
-    "تا":       "ta",
-    "اگه":      "age",
-    "همه":      "hame",
-    "هر":       "har",
-    "اما":      "ama",
-    "یا":       "ya",
-    "چون":      "chon",
-    "پس":       "pas",
-    "دیگه":     "dige",
-    "هنوز":     "hanooz",
-    "حالا":     "hala",
-    "قبلاً":    "ghaban",
-    "فقط":      "faghat",
-    "خب":       "khob",
-    "اینجا":    "inja",
-    "اونجا":    "onja",
-    "الان":     "alan",
-    "دیگه":     "dige",
-    "شاید":     "shayad",
-
-    # ─── Common verbs / verb forms ───────────────────────────────────────
-    "باید":     "bayad",
-    "باشه":     "bashe",
-    "کن":       "kon",
-    "کنم":      "konam",
-    "کنی":      "koni",
-    "کنه":      "kone",
-    "کنیم":     "konim",
-    "کنید":     "konid",
-    "میکنم":    "mikonam",
-    "میکنی":    "mikoni",
-    "میکنه":    "mikone",
-    "میکنیم":   "mikonim",
-    "میکنید":   "mikonid",
-    "بکن":      "bokon",
-    "نکن":      "nakon",
-    "بده":      "bede",
-    "میده":     "mide",
-    "داد":      "dad",
-    "داری":     "dari",
-    "داره":     "dare",
-    "دارم":     "daram",
-    "دارن":     "daran",
-    "داریم":    "darim",
-    "بیا":      "bia",
-    "میام":     "miam",
-    "میای":     "miai",
-    "میاد":     "miad",
-    "بریم":     "berim",
-    "برو":      "boro",
-    "رفتم":     "raftam",
-    "رفتی":     "rafti",
-    "رفت":      "raft",
-    "رفتیم":    "raftim",
-    "بگو":      "bego",
-    "گفتم":     "goftam",
-    "گفتی":     "gofti",
-    "گفت":      "goft",
-    "گفتن":     "goftan",
-    "ببین":     "bebin",
-    "دیدم":     "didam",
-    "دیدی":     "didi",
-    "دید":      "did",
-    "بزن":      "bezan",
-    "زدم":      "zadam",
-    "بشین":     "beshin",
-    "نشستم":    "neshastam",
-    "بیا":      "bia",
-    "بخور":     "bokhor",
-    "خوردم":    "khordam",
-    "میخورم":   "mikhooram",
-    "میخوام":   "mikham",
-    "میخوای":   "mikhai",
-    "میخواد":   "mikhad",
-    "میخوان":   "mikhan",
-    "بخواد":    "bekhad",
-    "بخوای":    "bekhai",
-    "نمیخوام":  "nemikham",
-    "میرم":     "miram",
-    "میری":     "miri",
-    "میره":     "mire",
-    "میریم":    "mirim",
-    "بمون":     "bemoon",
-    "موندم":    "moondam",
-    "بپوش":     "bepush",
-    "بخواب":    "bekhab",
-    "خوابیدم":  "khabeedam",
-    "بخند":     "bekhond",
-    "خندیدم":   "khandeedam",
-    "بگیر":     "begir",
-    "گرفتم":    "gereftam",
-    "گرفتی":    "gerefti",
-    "گرفت":     "gereft",
-    "بذار":     "bezar",
-    "گذاشتم":   "gozashtam",
-    "بپرس":     "bepors",
-    "پرسیدم":   "porseedam",
-    "نمیدونم":  "nemidoonam",
-    "نمیدونی":  "nemidooni",
-    "میدونم":   "midoonam",
-    "میدونی":   "midooni",
-    "میدونه":   "midoone",
-    "بدونم":    "bedoonam",
-    "فهمیدم":   "fahmeedam",
-    "فهمیدی":   "fahmeedi",
-    "نفهمیدم":  "nafahmeedam",
-    "میفهمم":   "mifahmam",
-    "میتونم":   "mitonam",
-    "میتونی":   "mitooni",
-    "میتونه":   "mitoone",
-    "نمیتونم":  "nemitonam",
-    "نمیتونی":  "nemitooni",
-    "شدم":      "shodam",
-    "شدی":      "shodi",
-    "شد":       "shod",
-    "بشه":      "beshe",
-    "میشه":     "mishe",
-    "نمیشه":    "nemishe",
-    "بشم":      "besham",
-
-    # ─── Common nouns / adjectives ───────────────────────────────────────
-    "چی":       "chi",
-    "چه":       "che",
-    "چرا":      "chera",
-    "چطور":     "chetoor",
-    "کجا":      "koja",
-    "کی":       "ki",
-    "کدوم":     "kodoom",
-    "چند":      "chand",
-    "چقدر":     "cheghadr",
-    "خیلی":     "kheili",
-    "خوب":      "khob",
-    "خوبه":     "khube",
-    "بد":       "bad",
-    "بده":      "bade",
-    "قشنگ":     "ghashang",
-    "زیبا":     "ziba",
-    "بزرگ":     "bozorg",
-    "کوچیک":    "koochik",
-    "سریع":     "sari",
-    "آروم":     "aroom",
-    "درست":     "dorost",
-    "غلط":      "ghalat",
-    "مهم":      "mohem",
-    "راحت":     "rahat",
-    "سخت":      "sakht",
-    "آسون":     "asoon",
-    "گرون":     "geroon",
-    "ارزون":    "arzoon",
-    "سلام":     "salam",
-    "ممنون":    "mamnoon",
-    "خواهش":    "khahesh",
-    "ببخشید":   "bebakhshid",
-    "متشکرم":   "mотаshakeram",
-    "فکر":      "fekr",
-    "کار":      "kar",
-    "وقت":      "vaght",
-    "جا":       "ja",
-    "اسم":      "esm",
-    "آدم":      "adam",
-    "دوست":     "doost",
-    "خانه":     "khune",
-    "خونه":     "khune",
-    "مدرسه":    "madrese",
-    "ماشین":    "mashin",
-    "راه":      "rah",
-    "در":       "dar",
-    "پول":      "pool",
-    "روز":      "rooz",
-    "شب":       "shab",
-    "صبح":      "sobh",
-    "ظهر":      "zohr",
-    "امشب":     "emshab",
-    "امروز":    "emrooz",
-    "فردا":     "farda",
-    "دیروز":    "diruz",
-    "هفته":     "hafte",
-    "ماه":      "mah",
-    "سال":      "sal",
-    "اسم":      "esm",
-    "چشم":      "cheshm",
-    "دست":      "dast",
-    "قلب":      "ghalb",
-    "دل":       "del",
-    "سر":       "sar",
-    "پا":       "pa",
-
-    # ─── Colloquial / chat ────────────────────────────────────────────────
-    "آره":      "are",
-    "باشه":     "bashe",
-    "اوکی":     "okay",
-    "آخه":      "akhe",
-    "عه":       "e",
-    "وای":      "vay",
-    "اِ":       "e",
-    "هی":       "hey",
-    "خوشبختم":  "khoshbakhtam",
-    "کنار":     "kenar",
-    "لحظه":     "lahze",
-    "وایسا":    "veysa",
-    "امتحان":   "emtehan",
-    "غلطی":     "ghalati",
-    "زیباست":   "zibast",
-    "بلندشو":   "bolandsho",
-    "متشکرم":   "motashakeram",
-    "ببخش":     "bebakhsh",
-    "خوشحالم":  "khoshalam",
-    "ناراحتم":  "narahatam",
-    "عاشقتم":   "asheghetam",
-    "دوستت":    "doostet",
-    "دوستت دارم": "doostet daram",
-    "مراقب":    "morageb",
-    "حواست":    "havaset",
-    "بیخیال":   "bikheyal",
-    "ولش":      "velesh",
-    "ولم":      "velam",
-    "اصلاً":    "aslan",
-    "مثلاً":    "masalan",
-    "واقعاً":   "vaghean",
-    "جدی":      "jeddi",
-    "دروغ":     "doroogh",
-    "راست":     "rast",
+    # Top function words
+    "\u06a9\u0647":    "ke",
+    "\u0631\u0648":    "ro",
+    "\u0628\u0647":    "be",
+    "\u0645\u0646":    "man",
+    "\u0648":          "o",
+    "\u0627\u0632":    "az",
+    "\u062a\u0648":    "to",
+    "\u0627\u0648\u0646": "oon",
+    "\u0627\u06cc\u0646": "in",
+    "\u06cc\u0647":    "ye",
+    "\u0645\u06cc":    "mi",
+    "\u0646\u0647":    "na",
+    "\u0628\u0627":    "ba",
+    "\u062f\u0631":    "dar",
+    "\u0645\u0627":    "ma",
+    "\u0647\u0645":    "ham",
+    "\u0628\u0648\u062f": "bood",
+    "\u062a\u0627":    "ta",
+    "\u0627\u06af\u0647": "age",
+    "\u0647\u0645\u0647": "hame",
+    "\u0647\u0631":    "har",
+    "\u0627\u0645\u0627": "ama",
+    "\u06cc\u0627":    "ya",
+    "\u0686\u0648\u0646": "chon",
+    "\u067e\u0633":    "pas",
+    "\u062f\u06cc\u06af\u0647": "dige",
+    "\u0647\u0646\u0648\u0632": "hanooz",
+    "\u062d\u0627\u0644\u0627": "hala",
+    "\u0641\u0642\u0637": "faghat",
+    "\u062e\u0628":    "khob",
+    "\u0627\u06cc\u0646\u062c\u0627": "inja",
+    "\u0627\u0648\u0646\u062c\u0627": "onja",
+    "\u0627\u0644\u0627\u0646": "alan",
+    "\u0634\u0627\u06cc\u062f": "shayad",
+    # Common verbs
+    "\u0628\u0627\u06cc\u062f":    "bayad",
+    "\u0628\u0627\u0634\u0647":    "bashe",
+    "\u06a9\u0646":               "kon",
+    "\u06a9\u0646\u0645":          "konam",
+    "\u06a9\u0646\u06cc":          "koni",
+    "\u06a9\u0646\u0647":          "kone",
+    "\u06a9\u0646\u06cc\u0645":    "konim",
+    "\u06a9\u0646\u06cc\u062f":    "konid",
+    "\u0645\u06cc\u06a9\u0646\u0645": "mikonam",
+    "\u0645\u06cc\u06a9\u0646\u06cc": "mikoni",
+    "\u0645\u06cc\u06a9\u0646\u0647": "mikone",
+    "\u0628\u0643\u0646":          "bokon",
+    "\u0646\u06a9\u0646":          "nakon",
+    "\u0628\u062f\u0647":          "bede",
+    "\u0645\u06cc\u062f\u0647":    "mide",
+    "\u062f\u0627\u062f":          "dad",
+    "\u062f\u0627\u0631\u06cc":    "dari",
+    "\u062f\u0627\u0631\u0647":    "dare",
+    "\u062f\u0627\u0631\u0645":    "daram",
+    "\u062f\u0627\u0631\u0646":    "daran",
+    "\u062f\u0627\u0631\u06cc\u0645": "darim",
+    "\u0628\u06cc\u0627":          "bia",
+    "\u0645\u06cc\u0627\u0645":    "miam",
+    "\u0645\u06cc\u0627\u06cc":    "miai",
+    "\u0645\u06cc\u0627\u062f":    "miad",
+    "\u0628\u0631\u06cc\u0645":    "berim",
+    "\u0628\u0631\u0648":          "boro",
+    "\u0631\u0641\u062a\u0645":    "raftam",
+    "\u0631\u0641\u062a\u06cc":    "rafti",
+    "\u0631\u0641\u062a":          "raft",
+    "\u0628\u06af\u0648":          "bego",
+    "\u06af\u0641\u062a\u0645":    "goftam",
+    "\u06af\u0641\u062a\u06cc":    "gofti",
+    "\u06af\u0641\u062a":          "goft",
+    "\u06af\u0641\u062a\u0646":    "goftan",
+    "\u0628\u0628\u06cc\u0646":    "bebin",
+    "\u062f\u06cc\u062f\u0645":    "didam",
+    "\u062f\u06cc\u062f\u06cc":    "didi",
+    "\u062f\u06cc\u062f":          "did",
+    "\u0628\u0632\u0646":          "bezan",
+    "\u0632\u062f\u0645":          "zadam",
+    "\u0628\u0634\u06cc\u0646":    "beshin",
+    "\u0645\u06cc\u062e\u0648\u0627\u0645": "mikham",
+    "\u0645\u06cc\u062e\u0648\u0627\u06cc": "mikhai",
+    "\u0645\u06cc\u062e\u0648\u0627\u062f": "mikhad",
+    "\u0645\u06cc\u062e\u0648\u0627\u0646": "mikhan",
+    "\u0646\u0645\u06cc\u062e\u0648\u0627\u0645": "nemikham",
+    "\u0645\u06cc\u0631\u0645":    "miram",
+    "\u0645\u06cc\u0631\u06cc":    "miri",
+    "\u0645\u06cc\u0631\u0647":    "mire",
+    "\u0645\u06cc\u0631\u06cc\u0645": "mirim",
+    "\u0628\u0645\u0648\u0646":    "bemoon",
+    "\u0628\u06af\u06cc\u0631":    "begir",
+    "\u06af\u0631\u0641\u062a\u0645": "gereftam",
+    "\u06af\u0631\u0641\u062a":    "gereft",
+    "\u0628\u0630\u0627\u0631":    "bezar",
+    "\u0646\u0645\u06cc\u062f\u0648\u0646\u0645": "nemidoonam",
+    "\u0646\u0645\u06cc\u062f\u0648\u0646\u06cc": "nemidooni",
+    "\u0645\u06cc\u062f\u0648\u0646\u0645": "midoonam",
+    "\u0645\u06cc\u062f\u0648\u0646\u06cc": "midooni",
+    "\u0645\u06cc\u062f\u0648\u0646\u0647": "midoone",
+    "\u0645\u06cc\u062a\u0648\u0646\u0645": "mitonam",
+    "\u0645\u06cc\u062a\u0648\u0646\u06cc": "mitooni",
+    "\u0645\u06cc\u062a\u0648\u0646\u0647": "mitoone",
+    "\u0646\u0645\u06cc\u062a\u0648\u0646\u0645": "nemitonam",
+    "\u0646\u0645\u06cc\u062a\u0648\u0646\u06cc": "nemitooni",
+    "\u0634\u062f\u0645":          "shodam",
+    "\u0634\u062f\u06cc":          "shodi",
+    "\u0634\u062f":                "shod",
+    "\u0628\u0634\u0647":          "beshe",
+    "\u0645\u06cc\u0634\u0647":    "mishe",
+    "\u0646\u0645\u06cc\u0634\u0647": "nemishe",
+    # Nouns / adjectives
+    "\u0686\u06cc":    "chi",
+    "\u0686\u0647":    "che",
+    "\u0686\u0631\u0627": "chera",
+    "\u0686\u0637\u0648\u0631": "chetoor",
+    "\u06a9\u062c\u0627": "koja",
+    "\u06a9\u06cc":    "ki",
+    "\u06a9\u062f\u0648\u0645": "kodoom",
+    "\u0686\u0646\u062f": "chand",
+    "\u0686\u0642\u062f\u0631": "cheghadr",
+    "\u062e\u06cc\u0644\u06cc": "kheili",
+    "\u062e\u0648\u0628": "khob",
+    "\u062e\u0648\u0628\u0647": "khube",
+    "\u0628\u062f":    "bad",
+    "\u0642\u0634\u0646\u06af": "ghashang",
+    "\u0632\u06cc\u0628\u0627": "ziba",
+    "\u0628\u0632\u0631\u06af": "bozorg",
+    "\u06a9\u0648\u0686\u06cc\u06a9": "koochik",
+    "\u062f\u0631\u0633\u062a": "dorost",
+    "\u063a\u0644\u0637": "ghalat",
+    "\u0645\u0647\u0645": "mohem",
+    "\u0631\u0627\u062d\u062a": "rahat",
+    "\u0633\u062e\u062a": "sakht",
+    "\u0622\u0633\u0648\u0646": "asoon",
+    "\u06af\u0631\u0648\u0646": "geroon",
+    "\u0627\u0631\u0632\u0648\u0646": "arzoon",
+    "\u0633\u0644\u0627\u0645": "salam",
+    "\u0645\u0645\u0646\u0648\u0646": "mamnoon",
+    "\u0641\u06a9\u0631": "fekr",
+    "\u06a9\u0627\u0631": "kar",
+    "\u0648\u0642\u062a": "vaght",
+    "\u062f\u0648\u0633\u062a": "doost",
+    "\u062e\u0648\u0646\u0647": "khune",
+    "\u062e\u0627\u0646\u0647": "khune",
+    "\u0645\u0627\u0634\u06cc\u0646": "mashin",
+    "\u0631\u0648\u0632": "rooz",
+    "\u0634\u0628":    "shab",
+    "\u0635\u0628\u062d": "sobh",
+    "\u0638\u0647\u0631": "zohr",
+    "\u0627\u0645\u0634\u0628": "emshab",
+    "\u0627\u0645\u0631\u0648\u0632": "emrooz",
+    "\u0641\u0631\u062f\u0627": "farda",
+    "\u062f\u06cc\u0631\u0648\u0632": "diruz",
+    "\u0647\u0641\u062a\u0647": "hafte",
+    # Chat / colloquial
+    "\u0622\u0631\u0647":  "are",
+    "\u0627\u0635\u0644\u0627\u064b": "aslan",
+    "\u0648\u0627\u0642\u0639\u0627\u064b": "vaghean",
+    "\u062c\u062f\u06cc": "jeddi",
+    "\u062f\u0631\u0648\u063a": "doroogh",
+    "\u0631\u0627\u0633\u062a": "rast",
+    "\u062e\u0648\u0634\u0628\u062e\u062a\u0645": "khoshbakhtam",
+    "\u06a9\u0646\u0627\u0631": "kenar",
+    "\u0644\u062d\u0638\u0647": "lahze",
+    "\u0648\u0627\u06cc\u0633\u0627": "veysa",
+    "\u0627\u0645\u062a\u062d\u0627\u0646": "emtehan",
 }
 
 
 def rough_transliterate(word: str) -> str:
     if word in MANUAL_LATIN:
         return MANUAL_LATIN[word]
-
-    pieces = []
+    result = ""
     for ch in word:
         if ch in MULTI_CHAR_MAP:
-            pieces.append(MULTI_CHAR_MAP[ch])
+            result += MULTI_CHAR_MAP[ch]
         elif ch in SINGLE_CHAR_MAP:
-            pieces.append(SINGLE_CHAR_MAP[ch])
-        # else: skip unknown chars (punctuation etc. shouldn't reach here)
+            result += SINGLE_CHAR_MAP[ch]
+    result = re.sub(r"(.)\1{2,}", r"\1", result)
+    return result.strip() or "?"
 
-    latin = "".join(pieces)
 
-    # Collapse triple+ repeats (e.g. "rrr" → "r")
-    latin = re.sub(r"(.)\1{2,}", r"\1", latin)
-    latin = latin.strip()
-
-    return latin or "?"
+def normalize_latin_key(latin: str) -> str:
+    s = latin.lower()
+    s = s.replace("x", "kh")
+    s = s.replace("q", "gh")
+    s = s.replace("w", "v")
+    s = s.replace("aa", "a")
+    s = s.replace("oo", "o")
+    s = s.replace("ee", "i")
+    s = re.sub(r"(.)\1{2,}", r"\1", s)
+    s = re.sub(r"[^a-z]", "", s)
+    return s
 
 
 # ---------------------------------------------------------------------------
-# Build Keyman wordlist
+# Output builders
 # ---------------------------------------------------------------------------
 
-def build_wordlist(merged: list[tuple[str, int]]) -> None:
-    """
-    Write fingilish.wordlist.tsv in the format Keyman expects:
-      word <TAB> frequency
-    No header row.
+def build_outputs(merged: list[tuple[str, int]]) -> None:
+    latin_to_persian: dict[str, tuple[str, int]] = {}
+    lexicon_rows = []
 
-    The Persian word is the surface form that gets inserted.
-    The Keyman model's searchTermToKey converts typed Latin to a lookup key,
-    and also converts the Persian word to the same key space for indexing.
-    """
-    rows = []
-    for word, freq in merged:
-        latin = rough_transliterate(word)
+    for persian, freq in merged:
+        latin = rough_transliterate(persian)
         if latin == "?":
-            continue  # skip untranslatable entries (isolated punctuation etc.)
-        rows.append((word, freq))
+            continue
+        key = normalize_latin_key(latin)
+        if not key:
+            continue
+        lexicon_rows.append([persian, freq, latin])
+        if key not in latin_to_persian or freq > latin_to_persian[key][1]:
+            latin_to_persian[key] = (persian, freq)
 
-    # Sort by frequency descending.
-    rows.sort(key=lambda x: -x[1])
-
+    # fingilish.wordlist.tsv — Latin key TAB freq, no header
+    wordlist_rows = sorted(latin_to_persian.items(), key=lambda x: -x[1][1])
     with WORDLIST.open("w", encoding="utf-8", newline="") as f:
-        for word, freq in rows:
-            f.write(f"{word}\t{freq}\n")
+        for key, (_, freq) in wordlist_rows:
+            f.write(f"{key}\t{freq}\n")
+    print(f"  Wrote {len(wordlist_rows):,} entries -> {WORDLIST.name}")
 
-    print(f"  Wrote {len(rows):,} entries → {WORDLIST.name}")
+    # persian_map.tsv — for generating kmn rules later
+    map_rows = sorted(
+        [(k, p, f) for k, (p, f) in latin_to_persian.items()],
+        key=lambda x: -x[2]
+    )
+    write_tsv(PERSIAN_MAP, ["latin_key", "persian", "freq"], map_rows)
+    print(f"  Wrote {len(map_rows):,} entries -> {PERSIAN_MAP.name}")
 
+    # lexicon.tsv — human review
+    lexicon_rows.sort(key=lambda x: -x[1])
+    write_tsv(LEXICON, ["persian", "freq", "latin"], lexicon_rows)
+    print(f"  Wrote {len(lexicon_rows):,} entries -> {LEXICON.name}")
 
-def build_human_readable_lexicon(merged: list[tuple[str, int]]) -> None:
-    """
-    Write lexicon.tsv for human inspection:
-      word <TAB> freq <TAB> latin
-    """
-    rows = []
-    for word, freq in merged:
-        latin = rough_transliterate(word)
-        rows.append([word, freq, latin])
-
-    rows.sort(key=lambda x: -x[1])
-
-    write_tsv(LEXICON, ["word", "freq", "latin"], rows)
-    print(f"  Wrote {len(rows):,} entries → {LEXICON.name}")
-
-
-# ---------------------------------------------------------------------------
-# Blocklist
-# ---------------------------------------------------------------------------
 
 def write_blocklist() -> None:
-    """
-    Latin tokens that should never trigger auto-conversion because they are
-    common English words, which would cause false fires for bilingual users.
-    Extend this list as you discover false positives.
-    """
     blocked = sorted([
-        # English words that collide with valid Fingilish tokens
         "in", "to", "man", "dar", "bar", "be", "on", "no", "as",
         "are", "has", "had", "not", "she", "his", "her", "was",
         "can", "did", "get", "got", "him", "how", "its", "may",
         "our", "out", "set", "say", "use", "way", "who", "why",
-        "do",  "go",  "me",  "my",  "by",  "am",  "an",  "at",
-        "if",  "is",  "it",  "of",  "or",  "so",  "up",  "us",
+        "do", "go", "me", "my", "by", "am", "an", "at",
+        "if", "is", "it", "of", "or", "so", "up", "us",
     ])
     with BLOCKLIST.open("w", encoding="utf-8", newline="\n") as f:
         for item in blocked:
             f.write(item + "\n")
-    print(f"  Wrote {len(blocked)} entries → {BLOCKLIST.name}")
+    print(f"  Wrote {len(blocked)} entries -> {BLOCKLIST.name}")
 
-
-# ---------------------------------------------------------------------------
-# Demo lookup (uses the in-memory transliteration, not disk files)
-# ---------------------------------------------------------------------------
 
 def demo_lookup(merged: list[tuple[str, int]]) -> None:
     lookup: dict[str, list[tuple[str, int]]] = defaultdict(list)
-    for word, freq in merged:
-        latin = rough_transliterate(word)
+    for persian, freq in merged:
+        latin = rough_transliterate(persian)
         if latin != "?":
-            lookup[latin].append((word, freq))
+            key = normalize_latin_key(latin)
+            if key:
+                lookup[key].append((persian, freq))
 
-    print("\nSample lookups (top 3 matches per token):")
+    print("\nSample lookups (what trie will match):")
     tests = ["salam", "in", "ye", "oon", "mitooni", "kheili",
              "bayad", "koja", "bebin", "bego", "chera", "chetoor"]
-
     for token in tests:
-        matches = sorted(lookup.get(token, []), key=lambda x: -x[1])[:3]
+        key = normalize_latin_key(token)
+        matches = sorted(lookup.get(key, []), key=lambda x: -x[1])[:1]
         if matches:
-            top = ", ".join(f"{w} ({f:,})" for w, f in matches)
-            print(f"  {token:<14} → {top}")
+            persian, freq = matches[0]
+            print(f"  {token:<14} key={key:<14} -> {persian}  ({freq:,})")
         else:
-            print(f"  {token:<14} → (no match)")
+            print(f"  {token:<14} key={key:<14} -> (no match)")
 
 
 # ---------------------------------------------------------------------------
@@ -565,29 +462,21 @@ def main() -> None:
     if not SENTENCES_RAW.exists():
         raise FileNotFoundError(f"Missing: {SENTENCES_RAW}")
 
-    print("Loading word frequencies …")
-    word_counts = load_word_counts()
-    print(f"  {len(word_counts):,} unique words from words_raw.csv")
+    print("Loading frequencies ...")
+    wc = load_word_counts()
+    sc = load_sentence_word_counts()
+    merged = merge_counts(wc, sc)
+    print(f"  {len(merged):,} unique Persian words")
 
-    print("Loading sentence-derived word frequencies …")
-    sentence_counts = load_sentence_word_counts()
-    print(f"  {len(sentence_counts):,} unique words from sentences_raw.csv")
-
-    print("Merging …")
-    merged = merge_counts(word_counts, sentence_counts)
-    print(f"  {len(merged):,} unique words total")
-
-    print("\nWriting output files …")
-    build_wordlist(merged)
-    build_human_readable_lexicon(merged)
+    print("\nWriting output files ...")
+    build_outputs(merged)
     write_blocklist()
 
     demo_lookup(merged)
 
     print(f"\nDone. Files in {BASE_DIR}:")
-    for p in [WORDLIST, LEXICON, BLOCKLIST]:
-        size_kb = p.stat().st_size // 1024
-        print(f"  {p.name:<35} {size_kb:>5} KB")
+    for p in [WORDLIST, PERSIAN_MAP, LEXICON, BLOCKLIST]:
+        print(f"  {p.name:<40} {p.stat().st_size // 1024:>4} KB")
 
 
 if __name__ == "__main__":
