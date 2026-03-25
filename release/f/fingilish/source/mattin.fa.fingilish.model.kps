@@ -1,40 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package>
   <System>
-    <KeymanDeveloperVersion>13.0.107.0</KeymanDeveloperVersion>
-    <FileVersion>7.0</FileVersion>
+    <KeymanDeveloperVersion>18.0.245.0</KeymanDeveloperVersion>
+    <FileVersion>12.0</FileVersion>
   </System>
-
   <Options>
-    <ReadMeFile>readme.htm</ReadMeFile>
+    <ExecuteProgram></ExecuteProgram>
     <LicenseFile>..\LICENSE.md</LicenseFile>
+    <MSIFileName></MSIFileName>
+    <MSIOptions></MSIOptions>
   </Options>
-
   <StartMenu>
     <Folder></Folder>
     <Items/>
   </StartMenu>
-
   <Info>
-    <Name>Mattin NEW Fingilish Model</Name>
-    <Copyright URL="">© 2008-2026 SIL International</Copyright>
+    <Name URL="">Fingilish Lexical Model</Name>
+    <Copyright URL="">© 2024 Mattin Tasbihgoo</Copyright>
     <Author URL="steadythrone376@gmail.com">Mattin Tasbihgoo</Author>
-    <Version URL="1.0">1.0</Version>
-    <Description>Lexical model for Fingilish to Persian whole-word prediction.</Description>
+    <Version URL="">1.0</Version>
+    <Description URL="">Lexical model for Fingilish phonetic Persian input.</Description>
   </Info>
-
   <Files>
     <File>
       <Name>..\build\mattin.fa.fingilish.model.js</Name>
-      <Description></Description>
+      <Description>Fingilish lexical model</Description>
       <CopyLocation>0</CopyLocation>
       <FileType>.js</FileType>
     </File>
     <File>
-      <Name>readme.htm</Name>
-      <Description></Description>
+      <Name>words\fingilish.wordlist.tsv</Name>
+      <Description>Fingilish wordlist</Description>
       <CopyLocation>0</CopyLocation>
-      <FileType>.htm</FileType>
+      <FileType>.tsv</FileType>
     </File>
     <File>
       <Name>..\LICENSE.md</Name>
@@ -43,20 +41,14 @@
       <FileType>.md</FileType>
     </File>
   </Files>
-
+  <Keyboards/>
   <LexicalModels>
     <LexicalModel>
-      <Name>Mattin NEW Fingilish Model</Name>
-      <ID>mattin_fa_fingilish</ID>
-      <Version>1.0</Version>
-      <RTL>true</RTL>
+      <ID>mattin.fa.fingilish</ID>
       <Languages>
         <Language ID="fa">Persian</Language>
       </Languages>
     </LexicalModel>
   </LexicalModels>
-
   <Strings/>
-  <RelatedPackages>
-  </RelatedPackages>
 </Package>

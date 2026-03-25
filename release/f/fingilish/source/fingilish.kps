@@ -5,12 +5,12 @@
     <FileVersion>12.0</FileVersion>
   </System>
   <Options>
-    <ExecuteProgram/>
+    <ExecuteProgram></ExecuteProgram>
     <ReadMeFile>readme.htm</ReadMeFile>
+    <MSIFileName></MSIFileName>
+    <MSIOptions></MSIOptions>
+    <Version>1.0</Version>
     <LicenseFile>..\LICENSE.md</LicenseFile>
-    <MSIFileName/>
-    <MSIOptions/>
-    <FollowKeyboardVersion/>
   </Options>
   <StartMenu>
     <Folder/>
@@ -20,7 +20,7 @@
     <Name URL="">Phonetic Persian</Name>
     <Copyright URL="">© 2008-2020 SIL International</Copyright>
     <Author URL="steadythrone376@gmail.com">Mattin Tasbihgoo</Author>
-    <Version URL="1.0"/>
+    <Version URL="">1.0</Version>
     <Description URL="">This keyboard is designed for the Persian language. It will be
 useful for other languages that require phonetic input.</Description>
   </Info>
@@ -73,18 +73,6 @@ useful for other languages that require phonetic input.</Description>
       <CopyLocation>0</CopyLocation>
       <FileType>.md</FileType>
     </File>
-    <File>
-      <Name>..\build\fingilish.model.js</Name>
-      <Description>Fingilish lexical model</Description>
-      <CopyLocation>0</CopyLocation>
-      <FileType>.js</FileType>
-    </File>
-    <File>
-      <Name>words\fingilish.wordlist.tsv</Name>
-      <Description>Fingilish wordlist</Description>
-      <CopyLocation>0</CopyLocation>
-      <FileType>.tsv</FileType>
-    </File>
   </Files>
   <Keyboards>
     <Keyboard>
@@ -94,13 +82,5 @@ useful for other languages that require phonetic input.</Description>
       </Languages>
     </Keyboard>
   </Keyboards>
-  <LexicalModels>
-    <LexicalModel>
-      <ID>fingilish</ID>
-      <Languages>
-        <Language ID="fa">Persian</Language>
-      </Languages>
-    </LexicalModel>
-  </LexicalModels>
   <Strings/>
 </Package>
