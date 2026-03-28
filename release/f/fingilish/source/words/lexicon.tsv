@@ -27,7 +27,7 @@ persian	freq	latin
 کن	278010	kon
 تا	273810	ta
 اینجا	262470	inja
-فکر	250707	fekr
+فکر	250707	fkr
 دیگه	248256	dige
 ت	241466	t
 نیست	240509	nyst
@@ -59,7 +59,7 @@ persian	freq	latin
 حالا	136895	hala
 کردم	135580	krdm
 کنه	133947	kone
-درست	132185	dorost
+درست	132185	drst
 وقتی	131490	vghty
 الان	128955	alan
 اونا	125951	avna
@@ -112,7 +112,7 @@ persian	freq	latin
 ممنون	82735	mamnoon
 میدونی	80764	midooni
 اونجا	80167	onja
-داریم	79807	darim
+داریم	79807	darym
 کاری	78450	kary
 واسه	78233	vash
 را	78127	ra
@@ -127,16 +127,16 @@ persian	freq	latin
 چون	73765	chon
 روی	73162	rvy
 چیکار	72990	chykar
-کنید	72977	konid
-میاد	71539	miad
+کنید	72977	knyd
+میاد	71539	myad
 انجام	71534	anjam
 دو	71215	dv
 نداره	71213	ndarh
 پدر	69092	pdr
 کمک	68638	kmk
-وقت	68544	vaght
+وقت	68544	vght
 منم	68283	mnm
-میخوای	68037	mikhai
+میخوای	68037	mykhvay
 داشته	67745	dashth
 هستی	67693	hsty
 مورد	66912	mvrd
@@ -190,7 +190,7 @@ persian	freq	latin
 برم	48250	brm
 بر	48103	br
 عزیزم	48060	zyzm
-دارن	47421	daran
+دارن	47421	darn
 هستن	47421	hstn
 شروع	47252	shrv
 صحبت	47245	shbt
@@ -217,7 +217,7 @@ persian	freq	latin
 حال	43020	hal
 شدم	42989	shodam
 شب	42759	shab
-نکن	42561	nakon
+نکن	42561	nkn
 میدم	42304	mydm
 ممکنه	42197	mmknh
 بابا	41962	baba
@@ -244,16 +244,16 @@ persian	freq	latin
 بدون	39126	bdvn
 مگه	39124	mgh
 هیچی	38991	hychy
-بزرگ	38930	bozorg
+بزرگ	38930	bzrg
 نیستم	38930	nystm
 سه	38926	sh
 استفاده	38916	astfadh
 بالا	38787	bala
 بودن	38085	bvdn
-کنار	38071	kenar
+کنار	38071	knar
 ساعت	37899	sat
 نمیتونم	37854	nemitonam
-چقدر	37780	cheghadr
+چقدر	37780	chghdr
 برات	37344	brat
 حالت	37344	halt
 بذار	37258	bezar
@@ -284,7 +284,7 @@ persian	freq	latin
 نمیشه	33574	nemishe
 بزن	33507	bezan
 نیاز	33359	nyaz
-شدی	33156	shodi
+شدی	33156	shdy
 زن	33074	zn
 دور	32924	dvr
 آروم	32713	arvm
@@ -298,7 +298,7 @@ persian	freq	latin
 زنگ	31883	zng
 دنیا	31861	dnya
 منه	31639	mnh
-گفتی	31610	gofti
+گفتی	31610	gfty
 زمین	31428	zmyn
 تونم	31424	tvnm
 طرف	31393	trf
@@ -325,25 +325,25 @@ persian	freq	latin
 دقیقه	29021	dghyghh
 مرده	28899	mrdh
 منظور	28865	mnzvr
-میتونه	28807	mitoone
+میتونه	28807	mytvnh
 آه	28742	ah
 مال	28677	mal
 باعث	28426	bas
 پلیس	28401	plys
-مهم	28162	mohem
+مهم	28162	mhm
 اجازه	28110	ajazh
 میکردم	28084	mykrdm
 نگه	28068	ngh
 میرم	27996	miram
 اتفاق	27897	atfagh
-بد	27887	bad
+بد	27887	bd
 نگران	27840	ngran
 پشت	27762	psht
 نشون	27629	nshvn
-لحظه	27487	lahze
+لحظه	27487	lhzh
 رفیق	27227	rfygh
 دل	27201	dl
-صبح	27193	sobh
+صبح	27193	sbh
 سمت	27188	smt
 کارو	27009	karv
 اینکارو	26957	aynkarv
@@ -395,15 +395,15 @@ persian	freq	latin
 بدیم	23077	bdym
 دونی	22989	dvny
 بکنم	22781	bknm
-امشب	22761	emshab
+امشب	22761	amshb
 حق	22712	hgh
 کدوم	22703	kodoom
 اومد	22632	avmd
-وایسا	22592	veysa
+وایسا	22592	vaysa
 اومده	22558	avmdh
 بخیر	22536	bkhyr
 نمیاد	22443	nmyad
-هفته	22439	hafte
+هفته	22439	hfth
 بهشون	22417	bhshvn
 منظورت	22415	mnzvrt
 اعتماد	22398	atmad
@@ -424,7 +424,7 @@ persian	freq	latin
 مرگ	21486	mrg
 جدید	21426	jdyd
 دادن	21327	dadn
-جدی	21324	jeddi
+جدی	21324	jdy
 چطوره	21320	chtvrh
 باشیم	21293	bashym
 گفته	21175	gfth
@@ -450,7 +450,7 @@ persian	freq	latin
 هرگز	19617	hrgz
 گرفتم	19538	gereftam
 خواهد	19535	khvahd
-دروغ	19466	doroogh
+دروغ	19466	drvgh
 بلند	19458	blnd
 کیه	19425	kyh
 انگار	19382	angar
@@ -480,7 +480,7 @@ persian	freq	latin
 غیر	18617	ghyr
 خفه	18601	khfh
 اینطوری	18597	ayntvry
-نمیتونی	18583	nemitooni
+نمیتونی	18583	nmytvny
 بهتون	18539	bhtvn
 جلوی	18504	jlvy
 اندازه	18499	andazh
@@ -491,7 +491,7 @@ persian	freq	latin
 واقعی	18303	vaghy
 احمق	18281	ahmgh
 کافی	18270	kafy
-میریم	18219	mirim
+میریم	18219	myrym
 خوبم	18214	khvbm
 لعنت	18174	lnt
 پر	18159	pr
@@ -503,7 +503,7 @@ persian	freq	latin
 بگیرم	17758	bgyrm
 بعضی	17725	bzy
 اومدم	17646	avmdm
-میام	17646	miam
+میام	17646	myam
 نشده	17621	nshdh
 ازم	17592	azm
 توئه	17537	tvh
@@ -527,7 +527,7 @@ persian	freq	latin
 دیوونه	16998	dyvvnh
 کشته	16986	kshth
 اینجوری	16960	aynjvry
-دیدی	16899	didi
+دیدی	16899	dydy
 شه	16897	shh
 یادت	16777	yadt
 عاشق	16775	ashgh
@@ -594,7 +594,7 @@ persian	freq	latin
 معذرت	14889	mzrt
 احتیاج	14888	ahtyaj
 افراد	14864	afrad
-سخت	14857	sakht
+سخت	14857	skht
 دلار	14838	dlar
 جدا	14829	jda
 هیچکس	14807	hychks
@@ -683,8 +683,8 @@ persian	freq	latin
 عکس	12522	ks
 کتاب	12508	ktab
 حساب	12482	hsab
-راحت	12465	rahat
-گفتن	12461	goftan
+راحت	12465	raht
+گفتن	12461	gftn
 نابود	12448	nabvd
 زد	12430	zd
 توجه	12422	tvjh
@@ -709,7 +709,7 @@ persian	freq	latin
 ترین	12034	tryn
 میزنی	11934	myzny
 مونده	11925	mvndh
-زدم	11920	zadam
+زدم	11920	zdm
 حداقل	11904	hdaghl
 جلو	11833	jlv
 بنظر	11832	bnzr
@@ -728,7 +728,7 @@ persian	freq	latin
 سوار	11478	svar
 خواستم	11473	khvastm
 چکار	11430	chkar
-کوچیک	11424	koochik
+کوچیک	11424	kvchyk
 نظرت	11421	nzrt
 قتل	11414	ghtl
 معلومه	11388	mlvmh
@@ -773,7 +773,7 @@ persian	freq	latin
 راهی	10682	rahy
 کشور	10669	kshvr
 روزی	10667	rvzy
-امتحان	10627	emtehan
+امتحان	10627	amthan
 تونیم	10608	tvnym
 بشن	10597	bshn
 قابل	10590	ghabl
@@ -807,7 +807,7 @@ persian	freq	latin
 ساله	10154	salh
 کردین	10147	krdyn
 حالش	10129	halsh
-میدونه	10099	midoone
+میدونه	10099	mydvnh
 سرورم	10090	srvrm
 ببر	10059	bbr
 فرصت	10052	frst
@@ -834,12 +834,12 @@ persian	freq	latin
 نباشه	9730	nbashh
 دیشب	9703	dyshb
 دیدن	9681	dydn
-میخوان	9597	mikhan
+میخوان	9597	mykhvan
 ارتش	9595	artsh
 قلب	9593	ghlb
 میدیم	9587	mydym
 فشار	9578	fshar
-دید	9576	did
+دید	9576	dyd
 العاده	9567	aladh
 میدن	9535	mydn
 مهمه	9512	mhmh
@@ -933,7 +933,7 @@ persian	freq	latin
 حل	8410	hl
 ببینه	8402	bbynh
 فهمیدی	8387	fhmydy
-میای	8382	miai
+میای	8382	myay
 وضعیت	8371	vzyt
 عجب	8367	jb
 منطقه	8365	mntghh
@@ -1057,7 +1057,7 @@ persian	freq	latin
 باد	7366	bad
 نمیده	7358	nmydh
 مرکز	7356	mrkz
-زیبا	7308	ziba
+زیبا	7308	zyba
 میمونه	7308	mymvnh
 آدمای	7273	admay
 مسئله	7235	mslh
@@ -1080,7 +1080,7 @@ persian	freq	latin
 حد	7079	hd
 چپ	7046	chp
 جهنم	7045	jhnm
-رفتی	7039	rafti
+رفتی	7039	rfty
 بوی	7033	bvy
 پاک	7027	pak
 خواهیم	7022	khvahym
@@ -1180,7 +1180,7 @@ persian	freq	latin
 گذشت	6458	gzsht
 ترجیح	6456	trjyh
 دیگر	6452	dygr
-نمیدونی	6440	nemidooni
+نمیدونی	6440	nmydvny
 سلامتی	6438	slamty
 مایکل	6434	maykl
 پیاده	6420	pyadh
@@ -1252,7 +1252,7 @@ persian	freq	latin
 عزیز	6118	zyz
 بیاره	6114	byarh
 دین	6113	dyn
-خانه	6100	khune
+خانه	6100	khanh
 قطار	6098	ghtar
 کلید	6082	klyd
 دریایی	6081	dryayy
@@ -1315,7 +1315,7 @@ persian	freq	latin
 خودشو	5767	khvdshv
 پسش	5753	pssh
 بزرگترین	5746	bzrgtryn
-دیروز	5738	diruz
+دیروز	5738	dyrvz
 جعبه	5733	jbh
 طولانی	5726	tvlany
 دوستان	5710	dvstan
@@ -1715,7 +1715,7 @@ persian	freq	latin
 تلویزیون	4139	tlvyzyvn
 مناسب	4138	mnasb
 هرچیزی	4131	hrchyzy
-قشنگ	4127	ghashang
+قشنگ	4127	ghshng
 نمیگم	4127	nmygm
 بمیرم	4120	bmyrm
 سرویس	4119	srvys
@@ -2079,7 +2079,7 @@ persian	freq	latin
 دخترت	3232	dkhtrt
 فایده	3231	faydh
 ون	3230	vn
-آسون	3228	asoon
+آسون	3228	asvn
 مرحله	3227	mrhlh
 بند	3218	bnd
 میتونین	3218	mytvnyn
@@ -2324,7 +2324,7 @@ persian	freq	latin
 رنج	2783	rnj
 تونن	2781	tvnn
 درواقع	2781	drvagh
-ظهر	2780	zohr
+ظهر	2780	zhr
 مشتری	2779	mshtry
 خیابان	2778	khyaban
 بخوابی	2777	bkhvaby
@@ -3471,7 +3471,7 @@ persian	freq	latin
 اتفاقاتی	1595	atfaghaty
 اعظم	1594	azm
 شوهرت	1594	shvhrt
-غلط	1594	ghalat
+غلط	1594	ghlt
 اساسی	1593	asasy
 تفاوت	1593	tfavt
 داخلش	1593	dakhlsh
@@ -4284,7 +4284,7 @@ persian	freq	latin
 افتضاح	1173	aftzah
 بپوشم	1173	bpvshm
 لحظات	1173	lhzat
-گرون	1173	geroon
+گرون	1173	grvn
 تئوری	1172	tvry
 دیم	1172	dym
 الکساندر	1171	alksandr
@@ -5499,7 +5499,7 @@ persian	freq	latin
 سوالات	807	svalat
 پسران	807	psran
 پولا	807	pvla
-ارزون	806	arzoon
+ارزون	806	arzvn
 باستان	806	bastan
 بفرستین	806	bfrstyn
 تارا	806	tara
@@ -6488,6 +6488,7 @@ persian	freq	latin
 قبرستون	626	ghbrstvn
 میداری	626	mydary
 گابریل	626	gabryl
+ھ	626	?
 آگاهی	625	agahy
 اعتیاد	625	atyad
 بازیگری	625	bazygry
@@ -6635,6 +6636,7 @@ persian	freq	latin
 سپاسگزارم	603	spasgzarm
 ویجی	603	vyjy
 کامله	603	kamlh
+؟	602	?
 استریت	602	astryt
 بخاطره	602	bkhatrh
 شوهرتون	602	shvhrtvn
@@ -8296,6 +8298,7 @@ persian	freq	latin
 اقلیم	421	aghlym
 شهاب	421	shhab
 صنعتی	421	snty
+ع	421	?
 مودبانه	421	mvdbanh
 مونت	421	mvnt
 پسند	421	psnd
@@ -10805,6 +10808,7 @@ persian	freq	latin
 هزارتو	262	hzartv
 وول	262	vvl
 کنترلت	262	kntrlt
+ء	261	?
 الکتریسیته	261	alktrysyth
 امداد	261	amdad
 اونهمه	261	avnhmh
@@ -18686,6 +18690,7 @@ persian	freq	latin
 گارونا	96	garvna
 گرام	96	gram
 گشادت	96	gshadt
+۱	96	?
 آخه؟	95	akhh
 آدرست	95	adrst
 آکاتور	95	akatvr
@@ -19138,6 +19143,7 @@ persian	freq	latin
 کفار	92	kfar
 گفتگویی	92	gftgvyy
 ییل	92	yyl
+۲	92	?
 آشکلیف	91	ashklyf
 آلک	91	alk
 آمبریج	91	ambryj
@@ -19385,6 +19391,7 @@ persian	freq	latin
 گالو	90	galv
 یهودا	90	yhvda
 یونیون	90	yvnyvn
+۶	90	?
 آزادن	89	azadn
 اتوبوسه	89	atvbvsh
 اجتماعات	89	ajtmaat
@@ -19494,6 +19501,7 @@ persian	freq	latin
 گذرا	89	gzra
 گردنشون	89	grdnshvn
 گرفتمشون	89	grftmshvn
+،	88	?
 آزادید	88	azadyd
 آشنام	88	ashnam
 آلمیتا	88	almyta
@@ -20997,6 +21005,7 @@ persian	freq	latin
 گشوده	78	gshvdh
 گفتمش	78	gftmsh
 گوریه؟	78	gvryh
+۰	78	?
 آبیاری	77	abyary
 آره،فکر	77	arhfkr
 آرچ	77	arch
@@ -21821,6 +21830,7 @@ persian	freq	latin
 گلوشو	73	glvshv
 گمبل	73	gmbl
 گیاهخوار	73	gyahkhvar
+۱۰	73	?
 آااه	72	ah
 آبسولم	72	absvlm
 آسمانها	72	asmanha
@@ -22007,6 +22017,7 @@ persian	freq	latin
 یاکوزا	72	yakvza
 یکهو	72	ykhv
 ییتس	72	yyts
+۳	72	?
 آوردیمش	71	avrdymsh
 بردتش	71	brdtsh
 خوندگی	71	khvndgy

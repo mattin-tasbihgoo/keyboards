@@ -45,6 +45,7 @@
   <LexicalModels>
     <LexicalModel>
       <ID>mattin.fa.fingilish</ID>
+      <RightToLeft>1</RightToLeft>
       <Languages>
         <Language ID="fa">Persian</Language>
       </Languages>
