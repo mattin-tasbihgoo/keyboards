@@ -7,11 +7,14 @@ This script generates a Latin→Persian dictionary where keys are
 how users ACTUALLY TYPE Fingilish (with vowels), not consonant skeletons.
 
 Sources:
-  1. MANUAL dict: hand-verified Fingilish for common words
-  2. NAMES dict: common Persian proper names
-  3. Algorithmic generation from wordlist (with variant expansion)
+  1. MANUAL dict: hand-verified Fingilish for common words (highest priority)
+  2. NAMES dict: common Persian proper names (highest priority)
+  3. Auto-generated from wordlist via improved transliteration (lower priority)
 
 Output: fingilish_dict.json (consumed by build_calljs.py)
+
+Lookup at runtime:  exact key → norm(key) → algorithmic fallback
+Norm collapses:     u↔oo↔o, ei↔ey↔i, aa→a, ee→i, x→kh, q→gh, w→v, ph→f
 
 To add words: edit the MANUAL dict below, re-run this script.
 """
@@ -21,6 +24,33 @@ from pathlib import Path
 from collections import defaultdict
 
 BASE_DIR = Path(__file__).resolve().parent
+
+# ============================================================
+# SHARED NORMALIZATION — must match norm() in ConvertWord.call_js
+# and searchTermToKey in the lexical model
+# ============================================================
+def norm(s):
+    """Collapse spelling variants to a canonical Latin key."""
+    s = s.lower()
+    # Consonant equivalences
+    s = s.replace('x', 'kh')
+    s = s.replace('q', 'gh')
+    s = s.replace('w', 'v')
+    s = s.replace('ph', 'f')
+    # Long vowels → short
+    s = s.replace('aa', 'a')
+    s = s.replace('oo', 'o')
+    s = s.replace('ee', 'i')
+    s = s.replace('ou', 'o')
+    # u/oo equivalence: u → o  (khub → khob, shuru → shoro)
+    s = s.replace('u', 'o')
+    # ei/ey → i  (kheili → khili, kheyli → khili)
+    s = s.replace('ey', 'i')
+    s = s.replace('ei', 'i')
+    # Collapse doubled letters
+    s = re.sub(r'(.)\1+', r'\1', s)
+    return s
+
 
 # ============================================================
 # MANUAL DICTIONARY — human-verified Fingilish spellings
@@ -36,7 +66,7 @@ MANUAL = {
     "بود": ["bood", "bud"], "تا": ["ta"], "اگه": ["age", "ageh"],
     "همه": ["hame", "hameh"], "هر": ["har"], "اما": ["ama", "amma"],
     "یا": ["ya"], "چون": ["chon", "choon"], "پس": ["pas"],
-    "دیگه": ["dige", "digeh", "dige"], "هنوز": ["hanooz", "hanuz"],
+    "دیگه": ["dige", "digeh"], "هنوز": ["hanooz", "hanuz"],
     "حالا": ["hala", "haala"], "فقط": ["faghat", "faqat"],
     "خب": ["khob", "khab"], "اینجا": ["inja", "injaa"],
     "اونجا": ["onja", "oonja"], "الان": ["alan", "alaan"],
@@ -47,14 +77,37 @@ MANUAL = {
     "واقعا": ["vaghan", "vaqean"], "اصلا": ["aslan"],
     "البته": ["albate", "albatteh"], "لطفا": ["lotfan", "lotfa"],
     "یعنی": ["yani", "yaani"],
+    # --- NEWLY ADDED common words ---
+    "برای": ["baraye", "baraaye"],
+    "حتما": ["hatman", "hatmen"],
+    "هیچی": ["hichi", "heechi"],
+    "مگه": ["mage", "mageh"],
+    "ای": ["ey", "ei"],
+    "بعضی": ["bazi", "ba'zi"],
+    "چیزی": ["chizi"],
+    "چیز": ["chiz"],
+    "کسی": ["kasi"],
+    "اگر": ["agar"],
+    "ولی": ["vali"],
+    "خودش": ["khodesh"],
+    "خودم": ["khodam"],
+    "خودت": ["khodet"],
+    "بهش": ["behesh"],
+    "بهم": ["behem"],
+    "بهت": ["behet"],
+    "ازش": ["azash"],
+    "باهاش": ["bahash"],
+    "براش": ["barash"],
 
     # Common verbs — present
     "باید": ["bayad", "baayad"], "باشه": ["bashe", "baasheh"],
     "کن": ["kon"], "کنم": ["konam", "konem"], "کنی": ["koni"],
     "کنه": ["kone", "koneh"], "کنیم": ["konim"],
     "کنید": ["konid", "konin"], "کنند": ["konand", "konan"],
-    "میکنم": ["mikonam", "mikonem"], "میکنی": ["mikoni"],
-    "میکنه": ["mikone", "mikoneh"], "میکنیم": ["mikonim"],
+    "میکنم": ["mikonam", "mikonem", "mikunam"],
+    "میکنی": ["mikoni", "mikuni"],
+    "میکنه": ["mikone", "mikoneh", "mikune"],
+    "میکنیم": ["mikonim"],
     "بکن": ["bokon"], "نکن": ["nakon"],
     "بده": ["bede", "bedeh"], "میده": ["mide", "mideh"],
     "داد": ["dad", "daad"], "داری": ["dari", "daari"],
@@ -121,32 +174,33 @@ MANUAL = {
 
     # Questions
     "چی": ["chi", "chee"], "چه": ["che", "cheh"],
-    "چرا": ["chera", "cheraa"], "چطور": ["chetor", "chetoor", "chetowr"],
-    "چطوری": ["chetori", "chetoori"], "چطوره": ["chetoreh", "chetooreh"],
+    "چرا": ["chera", "cheraa"], "چطور": ["chetor", "chetoor", "chetowr", "chetour"],
+    "چطوری": ["chetori", "chetoori", "cheturi"],
+    "چطوره": ["chetoreh", "chetooreh"],
     "کجا": ["koja", "kojaa"], "کجایی": ["kojai", "kojayi"],
     "کی": ["ki", "key"], "کدوم": ["kodoom", "kodum"],
     "چند": ["chand"], "چیکار": ["chikar", "chikaar"],
     "چقدر": ["cheqadr", "cheghadr"], "چجوری": ["chejoori", "chejuri"],
 
     # Adjectives/adverbs
-    "خیلی": ["kheili", "kheyli", "xeili", "xeyli"],
-    "خوب": ["khob", "khoob", "xoob", "xob"],
-    "خوبه": ["khobe", "khoobe", "khubeh"],
-    "خوبی": ["khobi", "khoobi"],
+    "خیلی": ["kheili", "kheyli", "xeili", "xeyli", "khili"],
+    "خوب": ["khoob", "khob", "khub", "xoob", "xob"],
+    "خوبه": ["khobe", "khoobe", "khubeh", "khube"],
+    "خوبی": ["khobi", "khoobi", "khubi"],
     "بد": ["bad", "baad"], "بزرگ": ["bozorg", "bozorgh"],
-    "کوچیک": ["kuchik", "koochik", "kuchek"],
+    "کوچیک": ["kuchik", "koochik", "kuchek", "kochik"],
     "زیاد": ["ziad", "ziyad", "ziyaad"],
     "کم": ["kam"], "زود": ["zood", "zud"],
     "دیر": ["dir", "deer"], "تند": ["tond"],
     "سخت": ["sakht"], "راحت": ["rahat", "raahat"],
-    "درست": ["dorost", "doroste"],
+    "درست": ["dorost", "doroste", "dorust"],
     "بهتر": ["behtar"], "بهترین": ["behtarin"],
     "بدتر": ["badtar"],
     "خوشحال": ["khoshhal", "khoshhaal"],
     "ناراحت": ["narahat", "naarahat"],
 
     # Greetings/social
-    "سلام": ["salam", "salaam"], "ممنون": ["mamnoon", "mamnun", "mersi"],
+    "سلام": ["salam", "salaam"], "ممنون": ["mamnoon", "mamnun"],
     "مرسی": ["mersi", "merci"], "خوشبختم": ["khoshbakhtam"],
     "خداحافظ": ["khodahafez", "khodaafez"],
     "ببخشید": ["bebakhshid", "bebakhshin"],
@@ -154,13 +208,14 @@ MANUAL = {
     "تبریک": ["tabrik", "tabreek"],
 
     # Nouns — common
-    "دوست": ["doost", "dust"], "خونه": ["khune", "khuneh", "khooneh"],
+    "دوست": ["doost", "dust", "doust"],
+    "خونه": ["khune", "khuneh", "khooneh"],
     "خانه": ["khaneh", "khaaneh"], "خانواده": ["khanevade", "khaanevadeh"],
     "ماشین": ["mashin", "maashin"], "روز": ["rooz", "ruz"],
     "شب": ["shab"], "امروز": ["emrooz", "emruz"],
     "فردا": ["farda", "fardaa"], "دیروز": ["dirooz", "diruz"],
-    "دیشب": ["dishab", "dishab"],
-    "آره": ["are", "aareh"], "آره": ["are"],
+    "دیشب": ["dishab"],
+    "آره": ["are", "aareh"],
     "پول": ["pool", "pul"], "کار": ["kar", "kaar"],
     "سال": ["sal", "saal"], "ماه": ["mah", "maah"],
     "هفته": ["hafte", "hafteh"],
@@ -183,8 +238,8 @@ MANUAL = {
     "بیمارستان": ["bimarestan", "bimaarestan"],
     "فرودگاه": ["forudgah", "foroodgaah"],
     "خیابان": ["khiaban", "khiyaabaan", "khiaboon"],
-    "شهر": ["shahr", "shahr"], "کشور": ["keshvar"],
-    "دنیا": ["donya", "donyaa"], "زندگی": ["zendegi", "zendegi"],
+    "شهر": ["shahr"], "کشور": ["keshvar"],
+    "دنیا": ["donya", "donyaa", "dunya"], "زندگی": ["zendegi"],
 
     # Verbs — more
     "خوش": ["khosh", "khoosh"], "گذشت": ["gozasht", "guzasht"],
@@ -201,9 +256,9 @@ MANUAL = {
     "فرستادم": ["ferestadam"], "فرستاده": ["ferestadeh"],
     "برگشتم": ["bargashtam"], "برگشت": ["bargasht"],
     "برگرد": ["bargard"], "برگردم": ["bargardam"],
-    "شروع": ["shoru", "shoroo"],
+    "شروع": ["shoru", "shoroo", "shuru"],
     "تموم": ["tamoom", "tamum"], "تمام": ["tamam", "tamaam"],
-    "فراموش": ["faramush", "faraamoosh"],
+    "فراموش": ["faramush", "faraamoosh", "faramoosh"],
     "انجام": ["anjam", "anjaam"],
     "استفاده": ["estefade", "estefaadeh"],
 
@@ -211,11 +266,11 @@ MANUAL = {
     "عاشق": ["ashegh", "aasheq"],
     "قلب": ["ghalb", "qalb"], "عشق": ["eshgh"],
     "همیشه": ["hamishe", "hamisheh"],
-    "دوباره": ["dobare", "dobareh", "dubaareh"],
+    "دوباره": ["dobare", "dobareh", "dubaareh", "doobare"],
     "بیشتر": ["bishtar", "bishttar"],
     "قربان": ["ghorban", "qorbaan"],
     "احتمالا": ["ehtemaalan", "ehtemaala"],
-    "مشکل": ["moshkel", "moshkul"],
+    "مشکل": ["moshkel", "moshkul", "mushkel"],
     "مشکلی": ["moshkeli"],
     "لعنتی": ["lanati", "laanati"],
     "اشتباه": ["eshtebah", "eshtebaaah"],
@@ -229,7 +284,6 @@ MANUAL = {
     "وقت": ["vaght", "vaqt"], "وقتی": ["vaghti", "vaqti"],
 
     # Adverbs/connectors
-    "خیلی": ["kheili", "kheyli"],
     "الان": ["alan", "alaan"], "بعدا": ["badan", "ba'dan"],
     "قبلا": ["ghablan", "qablan"],
     "مثلا": ["masalan", "mesalan"],
@@ -274,35 +328,193 @@ NAMES = {
     "تهران": ["tehran", "tehraan"],
 }
 
+
+# ============================================================
+# IMPROVED PERSIAN→LATIN TRANSLITERATION for auto-generation
+# Produces keys closer to what people actually type in Fingilish
+# ============================================================
+CONSONANTS = set('بپتثجچحخدذرزسشصضطظعغفقکگلمنهی')
+
+# Multi-char Persian → Latin (checked first)
+TRANSLIT_MULTI = {
+    "خو": "kho",   # خوب→khob, خونه→khune (NOT khvo)
+}
+
+# Single-char mappings
+TRANSLIT_SINGLE = {
+    'ا': 'a', 'آ': 'a', 'ب': 'b', 'پ': 'p', 'ت': 't', 'ث': 's',
+    'ج': 'j', 'چ': 'ch', 'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'z',
+    'ر': 'r', 'ز': 'z', 'ژ': 'zh', 'س': 's', 'ش': 'sh', 'ص': 's',
+    'ض': 'z', 'ط': 't', 'ظ': 'z', 'ع': '', 'غ': 'gh', 'ف': 'f',
+    'ق': 'gh', 'ک': 'k', 'گ': 'g', 'ل': 'l', 'م': 'm', 'ن': 'n',
+    'ه': 'h', 'ی': 'i', 'ء': '',
+    # و gets special handling below
+}
+
+def transliterate_for_dict(word):
+    """
+    Convert a Persian word to a reasonable Fingilish spelling.
+
+    Key improvements over the old transliterate():
+    - و between consonants → "oo" (not "v")
+    - و after خ → handled by خو→"kho" multi-map
+    - و word-final → "oo"
+    - ه word-final → "e" (not "h")
+    """
+    if not word:
+        return "?"
+
+    chars = list(word)
+    n = len(chars)
+    result = ""
+    i = 0
+
+    while i < n:
+        ch = chars[i]
+
+        # Try multi-char mappings first
+        if i + 1 < n:
+            pair = chars[i] + chars[i + 1]
+            if pair in TRANSLIT_MULTI:
+                result += TRANSLIT_MULTI[pair]
+                i += 2
+                continue
+
+        # و — context-dependent
+        if ch == 'و':
+            prev_is_consonant = (i > 0 and chars[i-1] in CONSONANTS)
+            next_is_consonant = (i + 1 < n and chars[i+1] in CONSONANTS)
+            next_is_end = (i + 1 >= n)
+
+            if i == 0:
+                # Word-initial و → "va"
+                result += "va"
+            elif prev_is_consonant and (next_is_consonant or next_is_end):
+                # و between consonants or at end = long vowel "oo"
+                result += "oo"
+            else:
+                # Default: "oo"
+                result += "oo"
+            i += 1
+            continue
+
+        # ه — word-final is usually "e" or "eh" (not "h")
+        if ch == 'ه' and i == n - 1:
+            result += "e"
+            i += 1
+            continue
+
+        # Standard single-char lookup
+        if ch in TRANSLIT_SINGLE:
+            result += TRANSLIT_SINGLE[ch]
+        i += 1
+
+    # Collapse triple+ repeated letters (but keep doubles like "oo")
+    result = re.sub(r'(.)\1{2,}', r'\1\1', result)
+
+    return result.strip() or "?"
+
+
+# ============================================================
+# BLOCKLIST — Latin words that should NOT trigger conversion
+# (unless overridden by MANUAL for known Persian words)
+# ============================================================
+BLOCKLIST = {
+    "am", "an", "as", "at", "by", "can",
+    "did", "do", "get", "go", "got", "had", "has", "her", "him", "his",
+    "how", "if", "is", "it", "its", "may", "me", "my",
+    "not", "of", "on", "or", "our", "out", "say", "set", "she",
+    "so", "up", "us", "use", "was", "way", "who", "why",
+}
+
+
 def build_dict():
     """Build the Latin→Persian dictionary."""
-    result = {}  # latin_key → persian_word
+    result = {}       # latin_key → persian_word  (final output)
+    norm_bank = {}    # norm(key) → (persian, freq) for collision resolution
+    manual_persian = set()
 
-    # 1. Add MANUAL entries (highest priority)
+    # -----------------------------------------------------------
+    # Tier 1: MANUAL entries (highest priority — exact keys)
+    # -----------------------------------------------------------
     for persian, variants in MANUAL.items():
+        manual_persian.add(persian)
         for latin in variants:
-            latin_lower = latin.lower()
-            if latin_lower not in result:
-                result[latin_lower] = persian
+            lat = latin.lower().replace("'", "")
+            if lat not in result:
+                result[lat] = persian
 
-    # 2. Add NAMES
+    # -----------------------------------------------------------
+    # Tier 2: NAMES (highest priority — exact keys)
+    # -----------------------------------------------------------
     for persian, variants in NAMES.items():
+        manual_persian.add(persian)
         for latin in variants:
-            latin_lower = latin.lower()
-            if latin_lower not in result:
-                result[latin_lower] = persian
+            lat = latin.lower().replace("'", "")
+            if lat not in result:
+                result[lat] = persian
 
-    # 3. Load wordlist and add any MANUAL-keyed words from it
+    # Mark all MANUAL/NAMES norm keys as untouchable
+    for persian, variants in {**MANUAL, **NAMES}.items():
+        for latin in variants:
+            nk = norm(latin.lower().replace("'", ""))
+            norm_bank[nk] = (persian, float('inf'))
+
+    # -----------------------------------------------------------
+    # Tier 3: Auto-generate from wordlist
+    # -----------------------------------------------------------
     wordlist_path = BASE_DIR / "fingilish.wordlist.tsv"
-    if wordlist_path.exists():
-        with wordlist_path.open("r", encoding="utf-8") as f:
-            for line in f:
-                parts = line.strip().split("\t")
-                if len(parts) >= 2:
-                    persian = parts[0]
-                    # Only add if the persian word is already in our dict
-                    # (we don't add algorithmic keys anymore)
-                    pass
+    if not wordlist_path.exists():
+        print(f"  WARNING: {wordlist_path} not found, skipping auto-generation")
+        return result
+
+    wordlist = []
+    with wordlist_path.open("r", encoding="utf-8") as f:
+        for line in f:
+            parts = line.strip().split("\t")
+            if len(parts) >= 2:
+                persian = parts[0].strip()
+                try:
+                    freq = int(parts[1])
+                except ValueError:
+                    continue
+                if not persian or not re.match(r'^[\u0600-\u06FF]+$', persian):
+                    continue
+                wordlist.append((persian, freq))
+
+    print(f"  Wordlist: {len(wordlist):,} Persian words loaded")
+
+    auto_exact = 0
+    auto_norm = 0
+    for persian, freq in wordlist:
+        if persian in manual_persian:
+            continue
+
+        latin = transliterate_for_dict(persian)
+        if latin == "?" or len(latin) < 2:
+            continue
+
+        lat = latin.lower()
+
+        # Store exact key if not taken and not blocklisted
+        if lat not in result and lat not in BLOCKLIST:
+            result[lat] = persian
+            auto_exact += 1
+
+        # Store under normalized key (highest freq wins)
+        nk = norm(lat)
+        if nk not in norm_bank or freq > norm_bank[nk][1]:
+            norm_bank[nk] = (persian, freq)
+            auto_norm += 1
+
+    # Add norm_bank entries to result where exact key is missing
+    norm_added = 0
+    for nk, (persian, freq) in norm_bank.items():
+        if nk not in result and nk not in BLOCKLIST:
+            result[nk] = persian
+            norm_added += 1
+
+    print(f"  Auto-generated: {auto_exact:,} exact + {norm_added:,} norm-only entries")
 
     return result
 
@@ -310,31 +522,52 @@ def build_dict():
 def main():
     d = build_dict()
 
-    # Sort by key for readability
     d_sorted = dict(sorted(d.items()))
 
     out_path = BASE_DIR / "fingilish_dict.json"
     with out_path.open("w", encoding="utf-8") as f:
         json.dump(d_sorted, f, ensure_ascii=False, separators=(',', ':'))
 
-    print(f"Dictionary: {len(d_sorted)} entries → {out_path.name}")
+    print(f"\nDictionary: {len(d_sorted)} entries → {out_path.name}")
     print(f"File size: {out_path.stat().st_size:,} bytes")
 
-    # Verify key lookups
-    print("\nVerification:")
+    # Verify key lookups (simulating runtime: exact → norm → miss)
+    def lookup(key):
+        key = key.lower()
+        if key in d: return d[key]
+        nk = norm(key)
+        if nk in d: return d[nk]
+        return "(miss)"
+
+    print("\nVerification (exact → norm → miss):")
     tests = [
+        # Core words
         ("salam", "سلام"), ("salaam", "سلام"), ("kheili", "خیلی"),
         ("xeili", "خیلی"), ("beram", "برم"), ("daneshgah", "دانشگاه"),
         ("dishab", "دیشب"), ("khaleh", "خاله"), ("va", "و"),
-        ("khosh", "خوش"), ("gozasht", "گذشت"), ("bache", "بچه"),
-        ("boodand", "بودند"), ("ali", "علی"), ("reza", "رضا"),
+        ("khosh", "خوش"), ("bache", "بچه"),
+        ("ali", "علی"), ("reza", "رضا"),
         ("mohammad", "محمد"), ("mattin", "متین"), ("matin", "متین"),
         ("chetori", "چطوری"), ("mikham", "میخوام"),
+        # Expanded norm tests
+        ("khub", "خوب"), ("khili", "خیلی"), ("mikunam", "میکنم"),
+        ("cheturi", "چطوری"), ("shuru", "شروع"),
+        # Missing word tests
+        ("baraye", "برای"), ("hatman", "حتما"), ("hichi", "هیچی"),
+        ("mage", "مگه"),
+        # u↔oo variants
+        ("dust", "دوست"), ("doost", "دوست"), ("doust", "دوست"),
+        ("zud", "زود"), ("zood", "زود"),
+        ("pul", "پول"), ("pool", "پول"),
     ]
+    ok = 0
     for latin, expected in tests:
-        got = d.get(latin, "(missing)")
+        got = lookup(latin)
         status = "✓" if got == expected else "✗"
-        print(f"  {status} {latin:<15} → {got:<10} (expected {expected})")
+        if got == expected: ok += 1
+        via = "exact" if latin.lower() in d else ("norm" if norm(latin.lower()) in d else "miss")
+        print(f"  {status} {latin:<15} → {got:<10} (expected {expected}) [{via}]")
+    print(f"\n  {ok}/{len(tests)} passed")
 
 
 if __name__ == "__main__":

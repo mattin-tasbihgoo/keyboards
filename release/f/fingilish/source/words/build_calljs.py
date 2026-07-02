@@ -25,15 +25,26 @@ TEMPLATE = r'''// ConvertWord.call_js — Fingilish → Persian conversion engin
 var D = %%DICT%%;
 
 // --- NORMALIZE: collapse spelling variants to canonical ---
+// Must stay in sync with norm() in build_dict.py and searchTermToKey
+// in the lexical model.
 function norm(s) {
   s = s.toLowerCase();
+  // Consonant equivalences
   s = s.replace(/x/g, 'kh');
   s = s.replace(/q/g, 'gh');
   s = s.replace(/w/g, 'v');
+  s = s.replace(/ph/g, 'f');
+  // Long vowels → short
   s = s.replace(/aa/g, 'a');
   s = s.replace(/oo/g, 'o');
   s = s.replace(/ee/g, 'i');
   s = s.replace(/ou/g, 'o');
+  // u/oo equivalence
+  s = s.replace(/u/g, 'o');
+  // ei/ey → i
+  s = s.replace(/ey/g, 'i');
+  s = s.replace(/ei/g, 'i');
+  // Collapse doubled letters
   s = s.replace(/(.)\1+/g, '$1');
   return s;
 }
