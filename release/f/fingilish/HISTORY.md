@@ -1,18 +1,29 @@
-US Basic Change History
+Fingilish (Phonetic Persian) Change History
 ====================
 
-1.2 (2020-05-01)
+1.1 (2026-04-18)
 ----------------
-* Add a phone layout
+* Fixed RTL suggestion banner rendering: `isRTL: true` in the lexical model plus BiDi
+  isolation characters (U+2067 RLI / U+2069 PDI) wrapped around every Persian wordlist
+  entry via `wrap_bidi.py`; `searchTermToKey` strips them before lookup
+* Improved lexical model: expanded MANUAL Persian→Latin override table for
+  high-frequency function words and colloquial verb forms
+* Expanded generated dictionary to ~28,000 entries (MANUAL + NAMES + auto-transliterated
+  frequency wordlist)
 
-1.1.1 (2019-04-22)
+1.0 (2026-03-30)
 ----------------
-* Removed script where "Suppress-Script" is set to Latn in BCP 47
+* First working hybrid IME build
+* Replaced 500+ individual `.kmn` word rules with a Latin pass-through keyboard that
+  triggers `call(ConvertWord)` on space/enter
+* Added generated `ConvertWord.call_js` conversion engine: dictionary lookup with
+  `norm()` variant collapse, plus character-level algorithmic transliteration fallback
+  for unknown words
+* Added `trie-1.0` lexical model (`mattin.fa.fingilish.model.ts`) driving the mobile
+  suggestion banner from a ~22,500-entry Persian frequency wordlist
+* Added data pipeline: `build_lexicon.py`, `build_dict.py`, `build_calljs.py`,
+  `wrap_bidi.py`
 
-1.1 (2019-04-15)
+0.1 (2026-01-04)
 ----------------
-* US Basic generated from template
-
-1.0 (2009-05-15)
-----------------
-* Initial release
+* Project scaffold created from the US Basic keyboard template
