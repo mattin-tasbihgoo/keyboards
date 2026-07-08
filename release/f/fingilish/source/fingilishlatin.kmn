@@ -1,18 +1,8 @@
-﻿c
-c Fingilish — Phonetic Persian keyboard
-c Hybrid IME: Latin pass-through + JavaScript conversion engine
+﻿c Fingilish — English pass-through twin (conversion OFF mode)
+c Identical layout to fingilish.kmn, no call() conversion triggers.
+c The iOS app toggles between the two via Manager.setKeyboard.
 c
-c Architecture:
-c   - User types Latin letters normally (pass-through rules below)
-c   - On Space/Enter, call() invokes ConvertWord.call_js
-c   - ConvertWord.call_js does:
-c     1. Dictionary lookup (2900+ words, handles spelling variants)
-c     2. Algorithmic fallback for unknown words (names, etc.)
-c     3. Deletes the Latin text, inserts Persian + trigger char
-c
-c This replaces the previous 500+ individual word rules.
-c
-store(&NAME) 'Fingilish'
+store(&NAME) 'English'
 store(&VISUALKEYBOARD) 'fingilish.kvks'
 store(&BITMAP) 'basic_kbdus.ico'
 store(&LAYOUTFILE) 'fingilish.keyman-touch-layout'
@@ -20,8 +10,6 @@ store(&COPYRIGHT) '© 2008-2020 SIL International'
 store(&KEYBOARDVERSION) '1.1'
 store(&TARGETS) 'any'
 
-c IMX: ConvertWord.call_js must be in the same folder as this .kmn
-store(fnConvert) "fingilish.dll:ConvertWord"
 
 begin Unicode > use(main)
 
@@ -33,14 +21,12 @@ c When pressed, the JavaScript engine converts the preceding
 c Latin word to Persian.
 c ============================================================
 
-+ [K_SPACE] > call(fnConvert)
-+ [K_ENTER] > call(fnConvert)
-+ [K_PERIOD] > call(fnConvert)         c .
-+ [K_COMMA] > call(fnConvert)          c ,
-+ [SHIFT K_SLASH] > call(fnConvert)    c ? (inserted as Persian ؟)
-+ [SHIFT K_1] > call(fnConvert)        c !
-+ [K_COLON] > call(fnConvert)          c ;
-+ [SHIFT K_COLON] > call(fnConvert)    c :
++ [K_PERIOD] > U+002e
++ [K_COMMA] > U+002c
++ [SHIFT K_SLASH] > U+003f
++ [SHIFT K_1] > U+0021
++ [K_COLON] > U+003b
++ [SHIFT K_COLON] > U+003a
 
 c ============================================================
 c Standard Latin pass-through rules

@@ -19,6 +19,7 @@
  *
  * Normalization rules (must match norm() in build_dict.py and
  * ConvertWord.call_js):
+ *   c→s before e/i/y else c→k ('ch' protected), [consonant]y$→i, eh$→e
  *   x→kh, q→gh, w→v, ph→f
  *   aa→a, oo→o, ee→i, ou→o
  *   u→o  (khub → khob)
@@ -245,6 +246,13 @@ const source: LexicalModelSource = {
     // Step 2: normalize variant Latin spellings → canonical key
     // MUST match norm() in build_dict.py and ConvertWord.call_js
     let key = raw.toLowerCase();
+    // c → s before e/i/y, else c → k ('ch' protected)
+    key = key.replace(/c(?=[eiy])/g, "s");
+    key = key.replace(/c(?!h)/g, "k");
+    // Word-final consonant+y → i  (kardy → kardi)
+    key = key.replace(/([^aeiou])y$/, "$1i");
+    // Word-final 'eh' → 'e'  (kardeh → karde)
+    key = key.replace(/eh$/, "e");
     key = key.replace(/x/g, "kh");
     key = key.replace(/q/g, "gh");
     key = key.replace(/w/g, "v");

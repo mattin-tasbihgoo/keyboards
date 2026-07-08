@@ -38,6 +38,18 @@ useful for other languages that require phonetic input.</Description>
       <FileType>.js</FileType>
     </File>
     <File>
+      <Name>..\build\fingilishlatin.kmx</Name>
+      <Description/>
+      <CopyLocation>0</CopyLocation>
+      <FileType>.kmx</FileType>
+    </File>
+    <File>
+      <Name>..\build\fingilishlatin.js</Name>
+      <Description/>
+      <CopyLocation>0</CopyLocation>
+      <FileType>.js</FileType>
+    </File>
+    <File>
       <Name>..\build\fingilish.kvk</Name>
       <Description/>
       <CopyLocation>0</CopyLocation>
@@ -79,6 +91,12 @@ useful for other languages that require phonetic input.</Description>
       <ID>fingilish</ID>
       <Languages>
         <Language ID="fa">Persian</Language>
+      </Languages>
+    </Keyboard>
+    <Keyboard>
+      <ID>fingilishlatin</ID>
+      <Languages>
+        <Language ID="en">English</Language>
       </Languages>
     </Keyboard>
   </Keyboards>

@@ -23,12 +23,21 @@ TEMPLATE = r'''// ConvertWord.call_js — Fingilish → Persian conversion engin
 
 // --- DICTIONARY (%%COUNT%% entries) ---
 var D = %%DICT%%;
+// --- SKELETON BANK (%%SKELCOUNT%% vowel-stripped entries) ---
+var S = %%SKEL%%;
 
 // --- NORMALIZE: collapse spelling variants to canonical ---
 // Must stay in sync with norm() in build_dict.py and searchTermToKey
 // in the lexical model.
 function norm(s) {
   s = s.toLowerCase();
+  // c → s before e/i/y (cinema→sinema), else c → k; 'ch' protected
+  s = s.replace(/c(?=[eiy])/g, 's');
+  s = s.replace(/c(?!h)/g, 'k');
+  // Word-final consonant+y → i  (kardy → kardi)
+  s = s.replace(/([^aeiou])y$/, '$1i');
+  // Word-final 'eh' → 'e'  (kardeh → karde)
+  s = s.replace(/eh$/, 'e');
   // Consonant equivalences
   s = s.replace(/x/g, 'kh');
   s = s.replace(/q/g, 'gh');
@@ -49,10 +58,26 @@ function norm(s) {
   return s;
 }
 
+// --- SKELETON: vowel-stripped key for tier-3 lookup ---
+// Must stay in sync with skeleton() in build_dict.py.
+function skel(s) {
+  if (s.length < 2) { return s; }
+  var head = s[0];
+  if ('aeou'.indexOf(head) >= 0) { head = 'a'; }
+  var body = s.slice(1);
+  if (body.length > 1) {
+    body = body.slice(0, -1).replace(/[aeo]/g, '') + body.slice(-1);
+  }
+  return head + body;
+}
+
 // --- ALGORITHMIC TRANSLITERATION: for unknown words ---
 // Handles any Latin input. Collapses double consonants.
 function translit(s) {
   s = s.toLowerCase();
+  // c → s before e/i/y, else k ('ch' protected, handled as digraph)
+  s = s.replace(/c(?=[eiy])/g, 's');
+  s = s.replace(/c(?!h)/g, 'k');
   // Collapse double consonants BEFORE transliterating
   // "mattin" → "matin", "mohammad" → "mohamad"
   s = s.replace(/([^aeiou])\1+/g, '$1');
@@ -87,23 +112,25 @@ function translit(s) {
     }
     // Vowels — context-dependent
     else if (c === 'a') {
-      // Word-initial 'a' → alef; mid-word 'a' → usually silent
-      if (i === 0) { out += '\u0627'; }
-      // After another vowel → alef
-      else if ('aeiou'.indexOf(s[i-1]) >= 0) { out += '\u0627'; }
-      // Otherwise skip (short vowel, not written in Persian)
-    }
-    else if (c === 'e') {
-      // Word-initial 'e' → alef
-      if (i === 0) { out += '\u0627'; }
-      // Before word end → ه (heh)
-      else if (i === len - 1) { out += '\u0647'; }
-      // Otherwise skip (short vowel)
+      // Word-initial 'aa' → آ (long alef with madda)
+      if (i === 0 && i + 1 < len && s[i+1] === 'a') {
+        out += '\u0622'; i += 2; continue;
+      }
+      // 'aa' elsewhere → single alef
+      if (i + 1 < len && s[i+1] === 'a') {
+        out += '\u0627'; i += 2; continue;
+      }
+      // Single 'a' → alef, always (user rule: a is alef, not just aa)
+      out += '\u0627';
     }
     else if (c === 'o') {
+      // 'oo' → vav (long vowel: joon→جون); word-initial 'oo' → او
+      if (i + 1 < len && s[i+1] === 'o') {
+        out += (i === 0) ? '\u0627\u0648' : '\u0648';
+        i += 2; continue;
+      }
       // Word-initial 'o' → alef+vav
       if (i === 0) { out += '\u0627\u0648'; }
-      // Between consonants when it's long 'oo' → vav (already collapsed)
       // Otherwise skip (short vowel)
     }
     else if (c === 'i') {
@@ -111,6 +138,17 @@ function translit(s) {
       if (i === 0) { out += '\u0627\u06CC'; }
       // Otherwise → ya
       else { out += '\u06CC'; }
+    }
+    else if (c === 'e') {
+      // 'ee' → ya (long vowel: azeez→عزیز spelled ازیز)
+      if (i + 1 < len && s[i+1] === 'e') {
+        out += (i === 0) ? '\u0627\u06CC' : '\u06CC';
+        i += 2; continue;
+      }
+      // fallthrough to existing single-'e' handling below
+      if (i === 0) { out += '\u0627'; }
+      else if (i === len - 1) { out += '\u0647'; }
+      // Otherwise skip (short vowel)
     }
     else if (c === 'u') {
       // u → vav
@@ -158,9 +196,11 @@ var rawWord = m[1];
 var wordLen = rawWord.length;
 var lowerWord = rawWord.toLowerCase();
 
-// Lookup: 1) exact → 2) normalized → 3) algorithmic fallback
+// Lookup: 1) exact → 2) normalized → 3) skeleton → 4) algorithmic fallback
 var persian = D[lowerWord];
-if (!persian) { persian = D[norm(lowerWord)]; }
+var nw = norm(lowerWord);
+if (!persian) { persian = D[nw]; }
+if (!persian) { persian = S[skel(nw)]; }
 if (!persian) { persian = translit(lowerWord); }
 
 target.deleteCharsBeforeCaret(wordLen);
@@ -175,12 +215,16 @@ def main():
         print(f"ERROR: {DICT_JSON} not found. Run build_dict.py first.")
         return
 
-    dict_data = DICT_JSON.read_text(encoding="utf-8")
-
     import json
-    count = len(json.loads(dict_data))
+    data = json.loads(DICT_JSON.read_text(encoding="utf-8"))
+    exact, skel = data["exact"], data["skel"]
 
-    code = TEMPLATE.replace("%%DICT%%", dict_data).replace("%%COUNT%%", str(count))
+    code = (TEMPLATE
+            .replace("%%DICT%%", json.dumps(exact, ensure_ascii=False, separators=(',', ':')))
+            .replace("%%SKEL%%", json.dumps(skel, ensure_ascii=False, separators=(',', ':')))
+            .replace("%%COUNT%%", str(len(exact)))
+            .replace("%%SKELCOUNT%%", str(len(skel))))
+    count = len(exact)
 
     OUTPUT.write_text(code, encoding="utf-8")
 

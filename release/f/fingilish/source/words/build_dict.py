@@ -32,6 +32,13 @@ BASE_DIR = Path(__file__).resolve().parent
 def norm(s):
     """Collapse spelling variants to a canonical Latin key."""
     s = s.lower()
+    # c → s before e/i/y (cinema→sinema), else c → k; 'ch' protected
+    s = re.sub(r'c(?=[eiy])', 's', s)
+    s = re.sub(r'c(?!h)', 'k', s)
+    # Word-final consonant+y → i  (kardy → kardi)
+    s = re.sub(r'([^aeiou])y$', r'\1i', s)
+    # Word-final 'eh' → 'e'  (kardeh → karde, ageh → age)
+    s = re.sub(r'eh$', 'e', s)
     # Consonant equivalences
     s = s.replace('x', 'kh')
     s = s.replace('q', 'gh')
@@ -50,6 +57,23 @@ def norm(s):
     # Collapse doubled letters
     s = re.sub(r'(.)\1+', r'\1', s)
     return s
+
+
+def skeleton(s):
+    """Vowel-skeleton key (tier-3 lookup): Persian doesn't write short
+    vowels, so the auto Persian→Latin generator drops them (کردی→'krdi')
+    while typists write them ('kardi'). Both collapse to the same skeleton:
+    initial vowel → 'a' (written alef), final char kept (written letter),
+    middle a/e/o stripped (unwritten short vowels)."""
+    if len(s) < 2:
+        return s
+    head = s[0]
+    if head in 'aeou':
+        head = 'a'
+    body = s[1:]
+    if len(body) > 1:
+        body = re.sub(r'[aeo]', '', body[:-1]) + body[-1]
+    return head + body
 
 
 # ============================================================
@@ -291,6 +315,10 @@ MANUAL = {
     "آخرین": ["akharin"],
     "نزدیک": ["nazdik", "nazdeek"],
     "دور": ["door", "dur"],
+    # --- کرد verb family: auto-generator drops the short 'a' (کردی→krdi) ---
+    "کرد": ["kard"], "کردم": ["kardam"], "کردی": ["kardi", "kardy"],
+    "کرده": ["karde", "kardeh"], "کردن": ["kardan"], "کردیم": ["kardim"],
+    "کردید": ["kardid"], "کردین": ["kardin"], "کردند": ["kardand"],
 }
 
 # ============================================================
@@ -466,14 +494,16 @@ def build_dict():
     wordlist_path = BASE_DIR / "fingilish.wordlist.tsv"
     if not wordlist_path.exists():
         print(f"  WARNING: {wordlist_path} not found, skipping auto-generation")
-        return result
+        return result, {}
 
     wordlist = []
     with wordlist_path.open("r", encoding="utf-8") as f:
         for line in f:
             parts = line.strip().split("\t")
             if len(parts) >= 2:
-                persian = parts[0].strip()
+                # Strip BiDi isolates (wrap_bidi.py wraps the wordlist in
+                # place; build order must not matter)
+                persian = re.sub('[\u2066-\u2069]', '', parts[0].strip())
                 try:
                     freq = int(parts[1])
                 except ValueError:
@@ -516,27 +546,44 @@ def build_dict():
 
     print(f"  Auto-generated: {auto_exact:,} exact + {norm_added:,} norm-only entries")
 
-    return result
+    # -----------------------------------------------------------
+    # Tier-4 skeleton bank: vowel-stripped keys, highest freq wins.
+    # Rescues words whose auto key lost its short vowels (krdi/kardi).
+    # -----------------------------------------------------------
+    skel_bank = {}
+    for nk, (persian, freq) in norm_bank.items():
+        sk = skeleton(nk)
+        if len(sk) >= 3 and sk not in BLOCKLIST:
+            if sk not in skel_bank or freq > skel_bank[sk][1]:
+                skel_bank[sk] = (persian, freq)
+    skel = {sk: p for sk, (p, _) in skel_bank.items()}
+    print(f"  Skeleton bank: {len(skel):,} entries")
+
+    return result, skel
 
 
 def main():
-    d = build_dict()
+    d, skel = build_dict()
 
     d_sorted = dict(sorted(d.items()))
+    skel_sorted = dict(sorted(skel.items()))
 
     out_path = BASE_DIR / "fingilish_dict.json"
     with out_path.open("w", encoding="utf-8") as f:
-        json.dump(d_sorted, f, ensure_ascii=False, separators=(',', ':'))
+        json.dump({"exact": d_sorted, "skel": skel_sorted}, f,
+                  ensure_ascii=False, separators=(',', ':'))
 
-    print(f"\nDictionary: {len(d_sorted)} entries → {out_path.name}")
+    print(f"\nDictionary: {len(d_sorted)} exact + {len(skel_sorted)} skeleton → {out_path.name}")
     print(f"File size: {out_path.stat().st_size:,} bytes")
 
-    # Verify key lookups (simulating runtime: exact → norm → miss)
+    # Verify key lookups (simulating runtime: exact → norm → skeleton → miss)
     def lookup(key):
         key = key.lower()
         if key in d: return d[key]
         nk = norm(key)
         if nk in d: return d[nk]
+        sk = skeleton(nk)
+        if sk in skel: return skel[sk]
         return "(miss)"
 
     print("\nVerification (exact → norm → miss):")
@@ -559,13 +606,18 @@ def main():
         ("dust", "دوست"), ("doost", "دوست"), ("doust", "دوست"),
         ("zud", "زود"), ("zood", "زود"),
         ("pul", "پول"), ("pool", "پول"),
+        # c / y$ / eh$ / skeleton flexibility
+        ("kardi", "کردی"), ("kardy", "کردی"), ("karde", "کرده"),
+        ("kardeh", "کرده"), ("kardam", "کردم"), ("cheghadr", "چقدر"),
+        ("kuchik", "کوچیک"), ("comak", "کمک"), ("cinema", "سینما"),
     ]
     ok = 0
     for latin, expected in tests:
         got = lookup(latin)
         status = "✓" if got == expected else "✗"
         if got == expected: ok += 1
-        via = "exact" if latin.lower() in d else ("norm" if norm(latin.lower()) in d else "miss")
+        nk = norm(latin.lower())
+        via = "exact" if latin.lower() in d else ("norm" if nk in d else ("skel" if skeleton(nk) in skel else "miss"))
         print(f"  {status} {latin:<15} → {got:<10} (expected {expected}) [{via}]")
     print(f"\n  {ok}/{len(tests)} passed")
 
