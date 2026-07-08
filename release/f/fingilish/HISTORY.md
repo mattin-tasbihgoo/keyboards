@@ -1,6 +1,20 @@
 Fingilish (Phonetic Persian) Change History
 ====================
 
+Unreleased (2026-07-07)
+----------------
+* Repo resynced as single source of truth (shipping `.kmn`s, touch layout, and
+  `.kps` were previously Desktop-only and uncommitted)
+* Added punctuation conversion triggers (`. , ! ? ; :`; `?` inserts Persian `؟`)
+* Added `fingilishlatin.kmn` — pass-through twin keyboard backing the iOS fa/EN toggle
+* Conversion engine: new tier-3 vowel-skeleton lookup (16,529 entries) rescuing
+  words whose auto-generated keys dropped unwritten short vowels (kardi/kardy/karde)
+* `norm()`: `c`→`s`/`k` handling, word-final consonant+`y`→`i`, `eh$`→`e`;
+  fallback vowel rules refined (single `a`→ا, initial `aa`→آ, mid `oo`→و, `ee`→ی)
+* Pipeline hardening: `build_dict.py` strips BiDi isolates on read (order trap
+  dead); dict format now `{exact, skel}`; canonical `build.sh` incl. kvk-collision
+  workaround; compiled artifacts removed from `source/`
+
 1.1 (2026-04-18)
 ----------------
 * Fixed RTL suggestion banner rendering: `isRTL: true` in the lexical model plus BiDi
