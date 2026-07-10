@@ -19,11 +19,12 @@
  *
  * Normalization rules (must match norm() in build_dict.py and
  * ConvertWord.call_js):
- *   c→s before e/i/y else c→k ('ch' protected), [consonant]y$→i, eh$→e
+ *   strip '/2/3, c→s before e/i/y else c→k ('ch' protected),
+ *   [consonant]y$→i, eh$→e
  *   x→kh, q→gh, w→v, ph→f
  *   aa→a, oo→o, ee→i, ou→o
  *   u→o  (khub → khob)
- *   ey→i, ei→i  (kheyli → khili)
+ *   ey→i, ei→i  (kheyli → khili), y→i everywhere
  *   collapse doubled letters
  */
 
@@ -182,6 +183,10 @@ const source: LexicalModelSource = {
       "خوشحال": "khoshhal","ناراحت": "narahat",
       "عاشق": "ashegh",  "عشق": "eshgh",
 
+      // Consonantal و / hamze words
+      "جواب": "javab",  "دیوار": "divar",  "آواز": "avaz",
+      "مسئله": "masale", "او": "oo",        "نو": "no",
+
       // Names
       "علی": "ali",      "رضا": "reza",     "محمد": "mohammad",
       "متین": "matin",   "سارا": "sara",    "مریم": "maryam",
@@ -202,7 +207,7 @@ const source: LexicalModelSource = {
       "ج":"j","ح":"h","د":"d","ذ":"z","ر":"r","ز":"z",
       "س":"s","ص":"s","ض":"z","ط":"t","ظ":"z","ع":"",
       "ف":"f","ک":"k","گ":"g","ل":"l","م":"m","ن":"n",
-      "و":"oo","ه":"h","ی":"i","ء":"",
+      "ه":"h","ی":"i","ء":"","ئ":"",
     };
 
     // Step 1: if Persian, convert to raw Latin
@@ -226,6 +231,20 @@ const source: LexicalModelSource = {
             }
           }
           const ch = chars[i];
+          // و — context-dependent (must match build_dict.py):
+          // word-initial → "va"; between consonants or final after a
+          // consonant → long vowel "oo"; adjacent to a vowel → "v"
+          if (ch === "\u0648") {
+            const CONS = "بپتثجچحخدذرزسشصضطظعغفقکگلمنهی";
+            const prevCons = i > 0 && CONS.indexOf(chars[i-1]) >= 0;
+            const nextCons = i + 1 < chars.length && CONS.indexOf(chars[i+1]) >= 0;
+            const atEnd = i + 1 >= chars.length;
+            if (i === 0) { raw += "va"; }
+            else if (prevCons && (nextCons || atEnd)) { raw += "oo"; }
+            else { raw += "v"; }
+            i++;
+            continue;
+          }
           // Word-final ه → "e" (not "h")
           if (ch === "\u0647" && i === chars.length - 1) {
             raw += "e";
@@ -246,6 +265,8 @@ const source: LexicalModelSource = {
     // Step 2: normalize variant Latin spellings → canonical key
     // MUST match norm() in build_dict.py and ConvertWord.call_js
     let key = raw.toLowerCase();
+    // Strip apostrophes and Arabizi digits (2=ء, 3=ع) — keys are bare
+    key = key.replace(/['\u201923]/g, "");
     // c → s before e/i/y, else c → k ('ch' protected)
     key = key.replace(/c(?=[eiy])/g, "s");
     key = key.replace(/c(?!h)/g, "k");
@@ -264,6 +285,8 @@ const source: LexicalModelSource = {
     key = key.replace(/u/g, "o");
     key = key.replace(/ey/g, "i");
     key = key.replace(/ei/g, "i");
+    // y → i everywhere (saye→saie, miyam→miiam→miam)
+    key = key.replace(/y/g, "i");
     key = key.replace(/(.)\1+/g, "$1");
     key = key.replace(/[^a-z]/g, "");
     return key;

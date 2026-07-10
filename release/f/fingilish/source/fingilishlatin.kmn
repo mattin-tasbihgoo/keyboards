@@ -6,8 +6,8 @@ store(&NAME) 'English'
 store(&VISUALKEYBOARD) 'fingilish.kvks'
 store(&BITMAP) 'basic_kbdus.ico'
 store(&LAYOUTFILE) 'fingilish.keyman-touch-layout'
-store(&COPYRIGHT) '© 2008-2020 SIL International'
-store(&KEYBOARDVERSION) '1.1'
+store(&COPYRIGHT) '© 2026 Mattin Tasbihgoo'
+store(&KEYBOARDVERSION) '1.2'
 store(&TARGETS) 'any'
 
 

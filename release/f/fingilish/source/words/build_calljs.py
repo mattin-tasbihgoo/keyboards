@@ -31,6 +31,8 @@ var S = %%SKEL%%;
 // in the lexical model.
 function norm(s) {
   s = s.toLowerCase();
+  // Strip apostrophes and Arabizi digits (2=\u0621, 3=\u0639) — dict keys are bare
+  s = s.replace(/['\u201923]/g, '');
   // c → s before e/i/y (cinema→sinema), else c → k; 'ch' protected
   s = s.replace(/c(?=[eiy])/g, 's');
   s = s.replace(/c(?!h)/g, 'k');
@@ -53,6 +55,8 @@ function norm(s) {
   // ei/ey → i
   s = s.replace(/ey/g, 'i');
   s = s.replace(/ei/g, 'i');
+  // y → i everywhere (saye→saie, miyam→miiam→miam)
+  s = s.replace(/y/g, 'i');
   // Collapse doubled letters
   s = s.replace(/(.)\1+/g, '$1');
   return s;
@@ -88,7 +92,7 @@ function translit(s) {
   // Digraphs (check first, longest match)
   var di = {
     'sh':'\u0634','ch':'\u0686','zh':'\u0698','kh':'\u062E',
-    'gh':'\u063A','th':'\u062B','ph':'\u0641'
+    'gh':'\u063A','ph':'\u0641'
   };
   // Single consonants
   var co = {
@@ -131,6 +135,8 @@ function translit(s) {
       }
       // Word-initial 'o' → alef+vav
       if (i === 0) { out += '\u0627\u0648'; }
+      // Word-final 'o' is a written vav (boro→\u0628\u0631\u0648, filmo)
+      else if (i === len - 1) { out += '\u0648'; }
       // Otherwise skip (short vowel)
     }
     else if (c === 'i') {
@@ -154,10 +160,10 @@ function translit(s) {
       // u → vav
       out += '\u0648';
     }
-    // Numbers pass through
-    else if (c >= '0' && c <= '9') {
-      out += c;
-    }
+    // Arabizi: 2 = hamze, 3 = eyn; apostrophe = eyn
+    else if (c === '2') { out += '\u0621'; }
+    else if (c === '3') { out += '\u0639'; }
+    else if (c === "'" || c === '\u2019') { out += '\u0639'; }
     i++;
   }
   return out || s;
@@ -175,16 +181,20 @@ var triggerChar = ' ';
 if (keyEvt && keyEvt.Lcode) {
   var code = keyEvt.Lcode;
   if (code === 190) triggerChar = '.';
-  else if (code === 188) triggerChar = ',';
-  else if (code === 191) triggerChar = '\u061F'; // ؟ Persian question mark
+  else if (code === 188) triggerChar = '\u060C'; // \u060C Persian comma
+  else if (code === 191) triggerChar = '\u061F'; // \u061F Persian question mark
   else if (code === 49) triggerChar = '!';
-  else if (code === 186) triggerChar = ';';
-  else if (code === 59) triggerChar = ':'; // shift+;
+  else if (code === 186) {
+    // K_COLON carries the same Lcode shifted and unshifted; check modifiers
+    var shifted = !!(keyEvt.Lmodifiers & 0x10);
+    triggerChar = shifted ? ':' : '\u061B'; // : or \u061B Persian semicolon
+  }
+  else if (code === 59) triggerChar = ':';
   else if (code === 13) triggerChar = '\n';
 }
 
 var before = target.getTextBeforeCaret();
-var m = before.match(/([a-zA-Z]+)$/);
+var m = before.match(/([a-zA-Z][a-zA-Z'\u201923]*)$/);
 
 if (!m) {
   // No Latin word — just insert the trigger character
@@ -197,10 +207,20 @@ var wordLen = rawWord.length;
 var lowerWord = rawWord.toLowerCase();
 
 // Lookup: 1) exact → 2) normalized → 3) skeleton → 4) algorithmic fallback
-var persian = D[lowerWord];
+// hasOwnProperty guards: bare D[w] resolves inherited Object.prototype
+// members (typing "constructor" would insert function source!)
+var hasOwn = Object.prototype.hasOwnProperty;
+var persian = hasOwn.call(D, lowerWord) ? D[lowerWord] : null;
+// Bare tier: apostrophe/Arabizi digits stripped, before norm collapses
+// long vowels (sa'at → saat must hit the exact key, not norm to 'sat')
+var bare = lowerWord.replace(/['\u201923]/g, '');
+if (!persian && bare !== lowerWord && hasOwn.call(D, bare)) { persian = D[bare]; }
 var nw = norm(lowerWord);
-if (!persian) { persian = D[nw]; }
-if (!persian) { persian = S[skel(nw)]; }
+if (!persian && hasOwn.call(D, nw)) { persian = D[nw]; }
+if (!persian) {
+  var sk = skel(nw);
+  if (hasOwn.call(S, sk)) { persian = S[sk]; }
+}
 if (!persian) { persian = translit(lowerWord); }
 
 target.deleteCharsBeforeCaret(wordLen);

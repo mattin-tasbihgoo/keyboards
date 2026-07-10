@@ -32,6 +32,8 @@ BASE_DIR = Path(__file__).resolve().parent
 def norm(s):
     """Collapse spelling variants to a canonical Latin key."""
     s = s.lower()
+    # Strip apostrophes and Arabizi digits (2=ء, 3=ع) — dict keys are bare
+    s = re.sub(r"['\u201923]", '', s)
     # c → s before e/i/y (cinema→sinema), else c → k; 'ch' protected
     s = re.sub(r'c(?=[eiy])', 's', s)
     s = re.sub(r'c(?!h)', 'k', s)
@@ -54,6 +56,8 @@ def norm(s):
     # ei/ey → i  (kheili → khili, kheyli → khili)
     s = s.replace('ey', 'i')
     s = s.replace('ei', 'i')
+    # y → i everywhere (saye→saie, miyam→miiam→miam, khyaboon→khiabon)
+    s = s.replace('y', 'i')
     # Collapse doubled letters
     s = re.sub(r'(.)\1+', r'\1', s)
     return s
@@ -92,10 +96,10 @@ MANUAL = {
     "یا": ["ya"], "چون": ["chon", "choon"], "پس": ["pas"],
     "دیگه": ["dige", "digeh"], "هنوز": ["hanooz", "hanuz"],
     "حالا": ["hala", "haala"], "فقط": ["faghat", "faqat"],
-    "خب": ["khob", "khab"], "اینجا": ["inja", "injaa"],
+    "خب": ["khob"], "اینجا": ["inja", "injaa"],
     "اونجا": ["onja", "oonja"], "الان": ["alan", "alaan"],
     "شاید": ["shayad", "shaayad"], "حتی": ["hata", "hatta"],
-    "بعد": ["bad", "baad"], "مثل": ["mesl", "mesle"],
+    "بعد": ["baad"], "مثل": ["mesl", "mesle"],
     "همین": ["hamin", "hameen"], "پیدا": ["peyda", "peida"],
     "هیچ": ["hich", "heech"], "یکی": ["yeki"],
     "واقعا": ["vaghan", "vaqean"], "اصلا": ["aslan"],
@@ -208,10 +212,10 @@ MANUAL = {
 
     # Adjectives/adverbs
     "خیلی": ["kheili", "kheyli", "xeili", "xeyli", "khili"],
-    "خوب": ["khoob", "khob", "khub", "xoob", "xob"],
+    "خوب": ["khoob", "khub", "xoob", "xob"],
     "خوبه": ["khobe", "khoobe", "khubeh", "khube"],
     "خوبی": ["khobi", "khoobi", "khubi"],
-    "بد": ["bad", "baad"], "بزرگ": ["bozorg", "bozorgh"],
+    "بد": ["bad"], "بزرگ": ["bozorg", "bozorgh"],
     "کوچیک": ["kuchik", "koochik", "kuchek", "kochik"],
     "زیاد": ["ziad", "ziyad", "ziyaad"],
     "کم": ["kam"], "زود": ["zood", "zud"],
@@ -267,7 +271,7 @@ MANUAL = {
 
     # Verbs — more
     "خوش": ["khosh", "khoosh"], "گذشت": ["gozasht", "guzasht"],
-    "گذاشت": ["gozasht", "guzaasht"],
+    "گذاشت": ["gozaasht", "guzaasht"],
     "گذاشتم": ["gozashtam"], "گذاشتن": ["gozashtan"],
     "فهمیدم": ["fahmidam", "fahmidem"],
     "فهمیدی": ["fahmidi"],
@@ -308,13 +312,18 @@ MANUAL = {
     "وقت": ["vaght", "vaqt"], "وقتی": ["vaghti", "vaqti"],
 
     # Adverbs/connectors
-    "الان": ["alan", "alaan"], "بعدا": ["badan", "ba'dan"],
+    "بعدا": ["badan", "ba'dan"],
     "قبلا": ["ghablan", "qablan"],
     "مثلا": ["masalan", "mesalan"],
     "اولین": ["avalin", "avvalin"],
     "آخرین": ["akharin"],
     "نزدیک": ["nazdik", "nazdeek"],
     "دور": ["door", "dur"],
+    # --- Words with consonantal و / hamze the auto-generator can't key ---
+    "جواب": ["javab", "javaab"], "دیوار": ["divar", "deevar"],
+    "آواز": ["avaz", "aavaaz"], "مسئله": ["masale", "masaleh", "mas'ale"],
+    "او": ["oo", "u"], "نو": ["no"],
+
     # --- کرد verb family: auto-generator drops the short 'a' (کردی→krdi) ---
     "کرد": ["kard"], "کردم": ["kardam"], "کردی": ["kardi", "kardy"],
     "کرده": ["karde", "kardeh"], "کردن": ["kardan"], "کردیم": ["kardim"],
@@ -375,7 +384,7 @@ TRANSLIT_SINGLE = {
     'ر': 'r', 'ز': 'z', 'ژ': 'zh', 'س': 's', 'ش': 'sh', 'ص': 's',
     'ض': 'z', 'ط': 't', 'ظ': 'z', 'ع': '', 'غ': 'gh', 'ف': 'f',
     'ق': 'gh', 'ک': 'k', 'گ': 'g', 'ل': 'l', 'م': 'm', 'ن': 'n',
-    'ه': 'h', 'ی': 'i', 'ء': '',
+    'ه': 'h', 'ی': 'i', 'ء': '', 'ئ': '',
     # و gets special handling below
 }
 
@@ -421,8 +430,9 @@ def transliterate_for_dict(word):
                 # و between consonants or at end = long vowel "oo"
                 result += "oo"
             else:
-                # Default: "oo"
-                result += "oo"
+                # و adjacent to a vowel letter = consonantal v
+                # (جواب→javab, دیوار→divar, آواز→avaz)
+                result += "v"
             i += 1
             continue
 
@@ -452,7 +462,7 @@ BLOCKLIST = {
     "did", "do", "get", "go", "got", "had", "has", "her", "him", "his",
     "how", "if", "is", "it", "its", "may", "me", "my",
     "not", "of", "on", "or", "our", "out", "say", "set", "she",
-    "so", "up", "us", "use", "was", "way", "who", "why",
+    "so", "up", "us", "use", "the", "was", "way", "who", "why",
 }
 
 
@@ -468,9 +478,11 @@ def build_dict():
     for persian, variants in MANUAL.items():
         manual_persian.add(persian)
         for latin in variants:
-            lat = latin.lower().replace("'", "")
+            lat = re.sub(r"['\u201923]", "", latin.lower())
             if lat not in result:
                 result[lat] = persian
+            elif result[lat] != persian:
+                print(f"  WARNING: MANUAL key '{lat}' for {persian} already claimed by {result[lat]}")
 
     # -----------------------------------------------------------
     # Tier 2: NAMES (highest priority — exact keys)
@@ -478,9 +490,11 @@ def build_dict():
     for persian, variants in NAMES.items():
         manual_persian.add(persian)
         for latin in variants:
-            lat = latin.lower().replace("'", "")
+            lat = re.sub(r"['\u201923]", "", latin.lower())
             if lat not in result:
                 result[lat] = persian
+            elif result[lat] != persian:
+                print(f"  WARNING: NAMES key '{lat}' for {persian} already claimed by {result[lat]}")
 
     # Mark all MANUAL/NAMES norm keys as untouchable
     for persian, variants in {**MANUAL, **NAMES}.items():
@@ -508,8 +522,10 @@ def build_dict():
                     freq = int(parts[1])
                 except ValueError:
                     continue
-                if not persian or not re.match(r'^[\u0600-\u06FF]+$', persian):
+                if not persian or not re.match(r'^[\u0600-\u06FF\u200c]+$', persian):
                     continue
+                if re.match(r'^(.)\1+$', persian):
+                    continue  # junk like آآآ / ههه
                 wordlist.append((persian, freq))
 
     print(f"  Wordlist: {len(wordlist):,} Persian words loaded")
@@ -580,6 +596,8 @@ def main():
     def lookup(key):
         key = key.lower()
         if key in d: return d[key]
+        bare = re.sub(r"['\u201923]", "", key)
+        if bare != key and bare in d: return d[bare]
         nk = norm(key)
         if nk in d: return d[nk]
         sk = skeleton(nk)
@@ -610,6 +628,17 @@ def main():
         ("kardi", "کردی"), ("kardy", "کردی"), ("karde", "کرده"),
         ("kardeh", "کرده"), ("kardam", "کردم"), ("cheghadr", "چقدر"),
         ("kuchik", "کوچیک"), ("comak", "کمک"), ("cinema", "سینما"),
+        # Collision fixes: each word must have its own reachable key
+        ("bad", "بد"), ("baad", "بعد"), ("khab", "خواب"), ("khob", "خب"),
+        ("gozasht", "گذشت"), ("gozaasht", "گذاشت"),
+        # Consonantal و + hamze words
+        ("javab", "جواب"), ("divar", "دیوار"), ("avaz", "آواز"),
+        ("masale", "مسئله"), ("oo", "او"), ("u", "او"), ("no", "نو"),
+        ("varzesh", "ورزش"),
+        # y→i normalization
+        ("saye", "سایه"), ("miyam", "میام"), ("khyaboon", "خیابان"),
+        # Apostrophe / Arabizi digit stripping in norm
+        ("sa'at", "ساعت"), ("mota2sefam", "متاسفم"), ("mas'ale", "مسئله"),
     ]
     ok = 0
     for latin, expected in tests:
@@ -617,7 +646,8 @@ def main():
         status = "✓" if got == expected else "✗"
         if got == expected: ok += 1
         nk = norm(latin.lower())
-        via = "exact" if latin.lower() in d else ("norm" if nk in d else ("skel" if skeleton(nk) in skel else "miss"))
+        bare2 = re.sub(r"['\u201923]", "", latin.lower())
+        via = "exact" if latin.lower() in d else ("bare" if bare2 in d else ("norm" if nk in d else ("skel" if skeleton(nk) in skel else "miss")))
         print(f"  {status} {latin:<15} → {got:<10} (expected {expected}) [{via}]")
     print(f"\n  {ok}/{len(tests)} passed")
 
