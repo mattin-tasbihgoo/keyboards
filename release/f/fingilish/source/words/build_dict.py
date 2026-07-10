@@ -324,6 +324,11 @@ MANUAL = {
     "آواز": ["avaz", "aavaaz"], "مسئله": ["masale", "masaleh", "mas'ale"],
     "او": ["oo", "u"], "نو": ["no"],
     "اول": ["aval", "avval"], "اوکی": ["ok", "okey", "oki"],
+    # G-sound collision fixes (2026-07-10): high-frequency words that lost
+    # their natural keys to auto/skel neighbors (گول, قزل, fallback junk)
+    "گل": ["gol"], "غزل": ["ghazal", "qazal"],
+    "قهوه": ["ghahve", "qahve", "ghahveh", "qahveh"],
+    "قورمه": ["ghorme", "qorme", "ghormeh", "qormeh"],
 
     # --- کرد verb family: auto-generator drops the short 'a' (کردی→krdi) ---
     "کرد": ["kard"], "کردم": ["kardam"], "کردی": ["kardi", "kardy"],
@@ -643,6 +648,9 @@ def main():
         # Word-initial او = long vowel; اول stays reachable via MANUAL
         ("oomad", "اومد"), ("umad", "اومد"), ("oomadam", "اومدم"),
         ("aval", "اول"), ("ok", "اوکی"), ("oki", "اوکی"),
+        # G-sound fixes; gool must still reach گول via its auto key
+        ("gol", "گل"), ("gool", "گول"), ("ghazal", "غزل"),
+        ("qahve", "قهوه"), ("ghahve", "قهوه"), ("ghorme", "قورمه"),
         # y→i normalization
         ("saye", "سایه"), ("miyam", "میام"), ("khyaboon", "خیابان"),
         # Apostrophe / Arabizi digit stripping in norm

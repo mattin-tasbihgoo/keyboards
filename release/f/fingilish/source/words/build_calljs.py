@@ -199,11 +199,14 @@ var m = before.match(/([a-zA-Z][a-zA-Z'\u201923]*)$/);
 // Double-space → period: a quick second space after a completed word
 // becomes ". " (iOS convention). Timestamp lives on the global object
 // because this file re-executes in a fresh scope on every trigger.
+// DISABLED per product decision 2026-07-10 (Mattin prefers plain spaces);
+// implementation kept — flip the flag to re-enable.
+var DOUBLE_SPACE_PERIOD = false;
 var g = (typeof globalThis !== 'undefined') ? globalThis : null;
 var nowTs = Date.now();
 
 if (!m) {
-  if (triggerChar === ' ' && g) {
+  if (triggerChar === ' ' && g && DOUBLE_SPACE_PERIOD) {
     var lastCh = before.charAt(before.length - 1);
     var prevCh = before.charAt(before.length - 2);
     var quick = (nowTs - (g.__fingilishLastSpaceTs || 0)) < 500;

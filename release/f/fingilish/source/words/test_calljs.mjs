@@ -65,26 +65,21 @@ eq(fire('salam', { Lcode: 190, Lmodifiers: 0 }), 'سلام.', '. trigger');
 eq(fire('سلام '), 'سلام  ', 'space after Persian (slow: plain space)');
 eq(fire('123'), '123 ', 'digits untouched');
 
-// --- Double-space → period (quick taps) ---
+// --- Double-space → period: implementation kept, DISABLED (2026-07-10) ---
+// If DOUBLE_SPACE_PERIOD is ever flipped back on in build_calljs.py, these
+// expectations must change back to 'سلام. ' behavior.
 {
   const t = makeTarget('salam');
-  fn.call(null, t, SPACE);           // converts, arms window
+  fn.call(null, t, SPACE);           // converts
   fn.call(null, t, SPACE);           // quick second tap
-  eq(t.text, 'سلام. ', 'double-space period after conversion');
+  eq(t.text, 'سلام  ', 'double-space DISABLED: quick second space stays a space');
 }
 {
   const t = makeTarget('salam');
   fn.call(null, t, SPACE);
-  await new Promise(r => setTimeout(r, 600));
-  fn.call(null, t, SPACE);           // slow second tap
-  eq(t.text, 'سلام  ', 'slow second space stays a space');
-}
-{
-  const t = makeTarget('salam');
   fn.call(null, t, SPACE);
-  fn.call(null, t, SPACE);           // → سلام.
-  fn.call(null, t, SPACE);           // quick third space after '. '
-  eq(t.text, 'سلام.  ', 'no period chain after period');
+  fn.call(null, t, SPACE);
+  eq(t.text, 'سلام   ', 'double-space DISABLED: triple space stays spaces');
 }
 
 console.log(`\n${pass}/${pass + fail} passed`);
