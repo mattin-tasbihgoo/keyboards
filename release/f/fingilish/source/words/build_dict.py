@@ -323,6 +323,7 @@ MANUAL = {
     "جواب": ["javab", "javaab"], "دیوار": ["divar", "deevar"],
     "آواز": ["avaz", "aavaaz"], "مسئله": ["masale", "masaleh", "mas'ale"],
     "او": ["oo", "u"], "نو": ["no"],
+    "اول": ["aval", "avval"], "اوکی": ["ok", "okey", "oki"],
 
     # --- کرد verb family: auto-generator drops the short 'a' (کردی→krdi) ---
     "کرد": ["kard"], "کردم": ["kardam"], "کردی": ["kardi", "kardy"],
@@ -426,6 +427,10 @@ def transliterate_for_dict(word):
             if i == 0:
                 # Word-initial و → "va"
                 result += "va"
+            elif i == 1 and chars[0] == 'ا':
+                # Word-initial او = long vowel (اومد→oomad, اوکی→ooki);
+                # NOT آ (آواز keeps consonantal v via the else branch)
+                result += "oo"
             elif prev_is_consonant and (next_is_consonant or next_is_end):
                 # و between consonants or at end = long vowel "oo"
                 result += "oo"
@@ -635,6 +640,9 @@ def main():
         ("javab", "جواب"), ("divar", "دیوار"), ("avaz", "آواز"),
         ("masale", "مسئله"), ("oo", "او"), ("u", "او"), ("no", "نو"),
         ("varzesh", "ورزش"),
+        # Word-initial او = long vowel; اول stays reachable via MANUAL
+        ("oomad", "اومد"), ("umad", "اومد"), ("oomadam", "اومدم"),
+        ("aval", "اول"), ("ok", "اوکی"), ("oki", "اوکی"),
         # y→i normalization
         ("saye", "سایه"), ("miyam", "میام"), ("khyaboon", "خیابان"),
         # Apostrophe / Arabizi digit stripping in norm

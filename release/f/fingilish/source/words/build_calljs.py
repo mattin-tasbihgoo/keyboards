@@ -196,7 +196,26 @@ if (keyEvt && keyEvt.Lcode) {
 var before = target.getTextBeforeCaret();
 var m = before.match(/([a-zA-Z][a-zA-Z'\u201923]*)$/);
 
+// Double-space → period: a quick second space after a completed word
+// becomes ". " (iOS convention). Timestamp lives on the global object
+// because this file re-executes in a fresh scope on every trigger.
+var g = (typeof globalThis !== 'undefined') ? globalThis : null;
+var nowTs = Date.now();
+
 if (!m) {
+  if (triggerChar === ' ' && g) {
+    var lastCh = before.charAt(before.length - 1);
+    var prevCh = before.charAt(before.length - 2);
+    var quick = (nowTs - (g.__fingilishLastSpaceTs || 0)) < 500;
+    if (quick && lastCh === ' ' && prevCh &&
+        ' .\u060C,!\u061F?:\u061B;\n'.indexOf(prevCh) < 0) {
+      target.deleteCharsBeforeCaret(1);
+      target.insertTextBeforeCaret('. ');
+      g.__fingilishLastSpaceTs = 0;
+      return 1;
+    }
+    g.__fingilishLastSpaceTs = nowTs;
+  }
   // No Latin word — just insert the trigger character
   target.insertTextBeforeCaret(triggerChar);
   return 1;
@@ -225,6 +244,9 @@ if (!persian) { persian = translit(lowerWord); }
 
 target.deleteCharsBeforeCaret(wordLen);
 target.insertTextBeforeCaret(persian + triggerChar);
+// Arm the double-space window: a quick space right after a space-triggered
+// conversion should produce ". " (word + double-tap space).
+if (g) { g.__fingilishLastSpaceTs = (triggerChar === ' ') ? nowTs : 0; }
 
 return 1;
 '''

@@ -186,6 +186,7 @@ const source: LexicalModelSource = {
       // Consonantal و / hamze words
       "جواب": "javab",  "دیوار": "divar",  "آواز": "avaz",
       "مسئله": "masale", "او": "oo",        "نو": "no",
+      "اول": "aval",     "اوکی": "ok",
 
       // Names
       "علی": "ali",      "رضا": "reza",     "محمد": "mohammad",
@@ -240,6 +241,10 @@ const source: LexicalModelSource = {
             const nextCons = i + 1 < chars.length && CONS.indexOf(chars[i+1]) >= 0;
             const atEnd = i + 1 >= chars.length;
             if (i === 0) { raw += "va"; }
+            else if (i === 1 && chars[0] === "\u0627") {
+              // Word-initial او = long vowel (اومد→oomad, اوکی→ooki)
+              raw += "oo";
+            }
             else if (prevCons && (nextCons || atEnd)) { raw += "oo"; }
             else { raw += "v"; }
             i++;
