@@ -1,6 +1,16 @@
 Fingilish (Phonetic Persian) Change History
 ====================
 
+1.5 (2026-07-13)
+----------------
+* Emoji key replaces the in-keyboard globe on the bottom row of every layer
+  (matching native iOS on Face ID devices); long-press reveals a globe subkey
+* Three curated emoji layers (72 emoji, 3 pages x 24), single-codepoint
+  Apple-emoji-safe set plus the U+2764 U+FE0F red heart; page nav + ABC return
+* Special keys use literal Unicode glyphs (⇧ ⌫ ↵) instead of the SpecialOSK
+  symbol font, so they render in SF like native key caps
+* No engine changes - conversion behavior identical to 1.3
+
 1.4 (2026-07-12)
 ----------------
 * Touch layout matched to native iOS keyboard geometry (phone platform, both

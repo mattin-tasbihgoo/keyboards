@@ -663,7 +663,7 @@
             "key": [
               {
                 "id": "K_SHIFT",
-                "text": "*Shift*",
+                "text": "⇧",
                 "width": "130",
                 "sp": 1,
                 "nextlayer": "shift"
@@ -699,7 +699,7 @@
               },
               {
                 "id": "K_BKSP",
-                "text": "*BkSp*",
+                "text": "⌫",
                 "width": "130",
                 "sp": 1,
                 "pad": "25"
@@ -731,10 +731,17 @@
                 ]
               },
               {
-                "id": "K_LOPT",
-                "text": "*Menu*",
+                "id": "T_EMOJI",
+                "text": "😀",
+                "sp": "1",
                 "width": "125",
-                "sp": 1
+                "nextlayer": "emoji1",
+                "sk": [
+                  {
+                    "id": "K_LOPT",
+                    "text": "🌐"
+                  }
+                ]
               },
               {
                 "id": "K_SPACE",
@@ -743,7 +750,7 @@
               },
               {
                 "id": "K_ENTER",
-                "text": "*Enter*",
+                "text": "↵",
                 "width": "270",
                 "sp": 1
               }
@@ -872,7 +879,7 @@
             "key": [
               {
                 "id": "K_SHIFT",
-                "text": "*Shift*",
+                "text": "⇧",
                 "width": "130",
                 "sp": 2,
                 "nextlayer": "default"
@@ -908,7 +915,7 @@
               },
               {
                 "id": "K_BKSP",
-                "text": "*BkSp*",
+                "text": "⌫",
                 "width": "130",
                 "sp": 1,
                 "pad": "25"
@@ -940,10 +947,17 @@
                 ]
               },
               {
-                "id": "K_LOPT",
-                "text": "*Menu*",
+                "id": "T_EMOJI",
+                "text": "😀",
+                "sp": "1",
                 "width": "125",
-                "sp": 1
+                "nextlayer": "emoji1",
+                "sk": [
+                  {
+                    "id": "K_LOPT",
+                    "text": "🌐"
+                  }
+                ]
               },
               {
                 "id": "K_SPACE",
@@ -952,7 +966,7 @@
               },
               {
                 "id": "K_ENTER",
-                "text": "*Enter*",
+                "text": "↵",
                 "width": "270",
                 "sp": 1
               }
@@ -1104,7 +1118,7 @@
               },
               {
                 "id": "K_BKSP",
-                "text": "*BkSp*",
+                "text": "⌫",
                 "width": "135",
                 "sp": 1,
                 "pad": "25"
@@ -1122,10 +1136,17 @@
                 "nextlayer": "default"
               },
               {
-                "id": "K_LOPT",
-                "text": "*Menu*",
+                "id": "T_EMOJI",
+                "text": "😀",
+                "sp": "1",
                 "width": "125",
-                "sp": 1
+                "nextlayer": "emoji1",
+                "sk": [
+                  {
+                    "id": "K_LOPT",
+                    "text": "🌐"
+                  }
+                ]
               },
               {
                 "id": "K_SPACE",
@@ -1134,7 +1155,7 @@
               },
               {
                 "id": "K_ENTER",
-                "text": "*Enter*",
+                "text": "↵",
                 "width": "270",
                 "sp": 1
               }
@@ -1275,7 +1296,7 @@
               },
               {
                 "id": "K_BKSP",
-                "text": "*BkSp*",
+                "text": "⌫",
                 "width": "135",
                 "sp": 1,
                 "pad": "25"
@@ -1293,10 +1314,17 @@
                 "nextlayer": "default"
               },
               {
-                "id": "K_LOPT",
-                "text": "*Menu*",
+                "id": "T_EMOJI",
+                "text": "😀",
+                "sp": "1",
                 "width": "125",
-                "sp": 1
+                "nextlayer": "emoji1",
+                "sk": [
+                  {
+                    "id": "K_LOPT",
+                    "text": "🌐"
+                  }
+                ]
               },
               {
                 "id": "K_SPACE",
@@ -1305,7 +1333,7 @@
               },
               {
                 "id": "K_ENTER",
-                "text": "*Enter*",
+                "text": "↵",
                 "width": "270",
                 "sp": 1
               }
@@ -1479,7 +1507,7 @@
               },
               {
                 "id": "K_BKSP",
-                "text": "*BkSp*",
+                "text": "⌫",
                 "width": 100,
                 "sp": 1
               }
@@ -1496,10 +1524,17 @@
                 "nextlayer": "default"
               },
               {
-                "id": "K_LOPT",
-                "text": "*Menu*",
+                "id": "T_EMOJI",
+                "text": "😀",
+                "sp": "1",
                 "width": "125",
-                "sp": 1
+                "nextlayer": "emoji1",
+                "sk": [
+                  {
+                    "id": "K_LOPT",
+                    "text": "🌐"
+                  }
+                ]
               },
               {
                 "id": "K_SPACE",
@@ -1508,9 +1543,540 @@
               },
               {
                 "id": "K_ENTER",
-                "text": "*Enter*",
+                "text": "↵",
                 "width": "270",
                 "sp": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "emoji1",
+        "row": [
+          {
+            "id": 1,
+            "key": [
+              {
+                "id": "U_1F600",
+                "text": "😀",
+                "width": "125"
+              },
+              {
+                "id": "U_1F602",
+                "text": "😂",
+                "width": "125"
+              },
+              {
+                "id": "U_1F923",
+                "text": "🤣",
+                "width": "125"
+              },
+              {
+                "id": "U_1F60A",
+                "text": "😊",
+                "width": "125"
+              },
+              {
+                "id": "U_1F60D",
+                "text": "😍",
+                "width": "125"
+              },
+              {
+                "id": "U_1F970",
+                "text": "🥰",
+                "width": "125"
+              },
+              {
+                "id": "U_1F618",
+                "text": "😘",
+                "width": "125"
+              },
+              {
+                "id": "U_1F60E",
+                "text": "😎",
+                "width": "125"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "key": [
+              {
+                "id": "U_1F914",
+                "text": "🤔",
+                "width": "125"
+              },
+              {
+                "id": "U_1F605",
+                "text": "😅",
+                "width": "125"
+              },
+              {
+                "id": "U_1F609",
+                "text": "😉",
+                "width": "125"
+              },
+              {
+                "id": "U_1F622",
+                "text": "😢",
+                "width": "125"
+              },
+              {
+                "id": "U_1F62D",
+                "text": "😭",
+                "width": "125"
+              },
+              {
+                "id": "U_1F621",
+                "text": "😡",
+                "width": "125"
+              },
+              {
+                "id": "U_1F97A",
+                "text": "🥺",
+                "width": "125"
+              },
+              {
+                "id": "U_1F634",
+                "text": "😴",
+                "width": "125"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "key": [
+              {
+                "id": "U_1F643",
+                "text": "🙃",
+                "width": "125"
+              },
+              {
+                "id": "U_1F62C",
+                "text": "😬",
+                "width": "125"
+              },
+              {
+                "id": "U_1F917",
+                "text": "🤗",
+                "width": "125"
+              },
+              {
+                "id": "U_1F644",
+                "text": "🙄",
+                "width": "125"
+              },
+              {
+                "id": "U_1F631",
+                "text": "😱",
+                "width": "125"
+              },
+              {
+                "id": "U_1F92F",
+                "text": "🤯",
+                "width": "125"
+              },
+              {
+                "id": "U_1F973",
+                "text": "🥳",
+                "width": "125"
+              },
+              {
+                "id": "U_1F607",
+                "text": "😇",
+                "width": "125"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "key": [
+              {
+                "id": "K_LOWER",
+                "text": "ABC",
+                "sp": "1",
+                "width": "170",
+                "nextlayer": "default"
+              },
+              {
+                "id": "T_PG_L",
+                "text": "◀",
+                "sp": "1",
+                "width": "130",
+                "nextlayer": "emoji3"
+              },
+              {
+                "id": "T_PG_R",
+                "text": "▶",
+                "sp": "1",
+                "width": "130",
+                "nextlayer": "emoji2"
+              },
+              {
+                "id": "K_SPACE",
+                "text": "",
+                "width": "400"
+              },
+              {
+                "id": "K_BKSP",
+                "text": "⌫",
+                "sp": "1",
+                "width": "170"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "emoji2",
+        "row": [
+          {
+            "id": 1,
+            "key": [
+              {
+                "id": "U_1F44D",
+                "text": "👍",
+                "width": "125"
+              },
+              {
+                "id": "U_1F44E",
+                "text": "👎",
+                "width": "125"
+              },
+              {
+                "id": "U_1F44F",
+                "text": "👏",
+                "width": "125"
+              },
+              {
+                "id": "U_1F64F",
+                "text": "🙏",
+                "width": "125"
+              },
+              {
+                "id": "U_1F4AA",
+                "text": "💪",
+                "width": "125"
+              },
+              {
+                "id": "U_1F64C",
+                "text": "🙌",
+                "width": "125"
+              },
+              {
+                "id": "U_1F44B",
+                "text": "👋",
+                "width": "125"
+              },
+              {
+                "id": "U_1F91E",
+                "text": "🤞",
+                "width": "125"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "key": [
+              {
+                "id": "U_2764_FE0F",
+                "text": "❤️",
+                "width": "125"
+              },
+              {
+                "id": "U_1F495",
+                "text": "💕",
+                "width": "125"
+              },
+              {
+                "id": "U_1F496",
+                "text": "💖",
+                "width": "125"
+              },
+              {
+                "id": "U_1F497",
+                "text": "💗",
+                "width": "125"
+              },
+              {
+                "id": "U_1F499",
+                "text": "💙",
+                "width": "125"
+              },
+              {
+                "id": "U_1F49A",
+                "text": "💚",
+                "width": "125"
+              },
+              {
+                "id": "U_1F49B",
+                "text": "💛",
+                "width": "125"
+              },
+              {
+                "id": "U_1F5A4",
+                "text": "🖤",
+                "width": "125"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "key": [
+              {
+                "id": "U_1F937",
+                "text": "🤷",
+                "width": "125"
+              },
+              {
+                "id": "U_1F926",
+                "text": "🤦",
+                "width": "125"
+              },
+              {
+                "id": "U_1F440",
+                "text": "👀",
+                "width": "125"
+              },
+              {
+                "id": "U_1F389",
+                "text": "🎉",
+                "width": "125"
+              },
+              {
+                "id": "U_1F382",
+                "text": "🎂",
+                "width": "125"
+              },
+              {
+                "id": "U_1F381",
+                "text": "🎁",
+                "width": "125"
+              },
+              {
+                "id": "U_1F525",
+                "text": "🔥",
+                "width": "125"
+              },
+              {
+                "id": "U_2728",
+                "text": "✨",
+                "width": "125"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "key": [
+              {
+                "id": "K_LOWER",
+                "text": "ABC",
+                "sp": "1",
+                "width": "170",
+                "nextlayer": "default"
+              },
+              {
+                "id": "T_PG_L",
+                "text": "◀",
+                "sp": "1",
+                "width": "130",
+                "nextlayer": "emoji1"
+              },
+              {
+                "id": "T_PG_R",
+                "text": "▶",
+                "sp": "1",
+                "width": "130",
+                "nextlayer": "emoji3"
+              },
+              {
+                "id": "K_SPACE",
+                "text": "",
+                "width": "400"
+              },
+              {
+                "id": "K_BKSP",
+                "text": "⌫",
+                "sp": "1",
+                "width": "170"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "emoji3",
+        "row": [
+          {
+            "id": 1,
+            "key": [
+              {
+                "id": "U_2B50",
+                "text": "⭐",
+                "width": "125"
+              },
+              {
+                "id": "U_1F319",
+                "text": "🌙",
+                "width": "125"
+              },
+              {
+                "id": "U_1F31E",
+                "text": "🌞",
+                "width": "125"
+              },
+              {
+                "id": "U_1F308",
+                "text": "🌈",
+                "width": "125"
+              },
+              {
+                "id": "U_1F355",
+                "text": "🍕",
+                "width": "125"
+              },
+              {
+                "id": "U_1F354",
+                "text": "🍔",
+                "width": "125"
+              },
+              {
+                "id": "U_2615",
+                "text": "☕",
+                "width": "125"
+              },
+              {
+                "id": "U_1F37A",
+                "text": "🍺",
+                "width": "125"
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "key": [
+              {
+                "id": "U_1F942",
+                "text": "🥂",
+                "width": "125"
+              },
+              {
+                "id": "U_1F34E",
+                "text": "🍎",
+                "width": "125"
+              },
+              {
+                "id": "U_1F370",
+                "text": "🍰",
+                "width": "125"
+              },
+              {
+                "id": "U_1F697",
+                "text": "🚗",
+                "width": "125"
+              },
+              {
+                "id": "U_1F680",
+                "text": "🚀",
+                "width": "125"
+              },
+              {
+                "id": "U_1F3E0",
+                "text": "🏠",
+                "width": "125"
+              },
+              {
+                "id": "U_1F4F1",
+                "text": "📱",
+                "width": "125"
+              },
+              {
+                "id": "U_1F4AF",
+                "text": "💯",
+                "width": "125"
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "key": [
+              {
+                "id": "U_2705",
+                "text": "✅",
+                "width": "125"
+              },
+              {
+                "id": "U_274C",
+                "text": "❌",
+                "width": "125"
+              },
+              {
+                "id": "U_1F648",
+                "text": "🙈",
+                "width": "125"
+              },
+              {
+                "id": "U_1F63B",
+                "text": "😻",
+                "width": "125"
+              },
+              {
+                "id": "U_1F436",
+                "text": "🐶",
+                "width": "125"
+              },
+              {
+                "id": "U_1F431",
+                "text": "🐱",
+                "width": "125"
+              },
+              {
+                "id": "U_1F339",
+                "text": "🌹",
+                "width": "125"
+              },
+              {
+                "id": "U_1F4A4",
+                "text": "💤",
+                "width": "125"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "key": [
+              {
+                "id": "K_LOWER",
+                "text": "ABC",
+                "sp": "1",
+                "width": "170",
+                "nextlayer": "default"
+              },
+              {
+                "id": "T_PG_L",
+                "text": "◀",
+                "sp": "1",
+                "width": "130",
+                "nextlayer": "emoji2"
+              },
+              {
+                "id": "T_PG_R",
+                "text": "▶",
+                "sp": "1",
+                "width": "130",
+                "nextlayer": "emoji1"
+              },
+              {
+                "id": "K_SPACE",
+                "text": "",
+                "width": "400"
+              },
+              {
+                "id": "K_BKSP",
+                "text": "⌫",
+                "sp": "1",
+                "width": "170"
               }
             ]
           }
