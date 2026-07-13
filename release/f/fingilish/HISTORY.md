@@ -1,6 +1,20 @@
 Fingilish (Phonetic Persian) Change History
 ====================
 
+1.4 (2026-07-12)
+----------------
+* Touch layout matched to native iOS keyboard geometry (phone platform, both
+  `fingilish` and `fingilishlatin`), derived from pixel measurements of device
+  screenshots:
+  - Letters row 3: shift/backspace w=130 with 25-unit flanking gaps
+  - A-row: symmetric half-key spacers (was visually lopsided)
+  - Numeric/symbol row 3: ends w=135, punctuation w=145, flanking gaps; fixes
+    oversized backspace (row previously summed under the normalization
+    threshold, dumping leftover width into the last key)
+  - Symbol-switch key labeled `#+=` (was a garbled special glyph); `abc`→`ABC`
+  - Bottom row: space 560 / return 270 (native 2.06:1 ratio), uniform gaps
+* No engine changes — conversion behavior identical to 1.3
+
 Unreleased (2026-07-07)
 ----------------
 * Repo resynced as single source of truth (shipping `.kmn`s, touch layout, and
