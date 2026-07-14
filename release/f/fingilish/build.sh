@@ -21,7 +21,8 @@ if [[ "${1:-}" == "--lexicon" ]]; then
 fi
 
 # 1. Dictionary + conversion engine
-( cd source/words && python3 build_dict.py && python3 build_calljs.py )
+# e2e harness (test_calljs.mjs) gates the build: non-zero exit aborts under set -e
+( cd source/words && python3 build_dict.py && python3 build_calljs.py && node test_calljs.mjs )
 cp source/words/ConvertWord.call_js source/ConvertWord.call_js
 
 # 2. Compile keyboards (kmc drops outputs next to source)

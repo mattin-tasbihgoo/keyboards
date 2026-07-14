@@ -82,5 +82,28 @@ eq(fire('123'), '123 ', 'digits untouched');
   eq(t.text, 'سلام   ', 'double-space DISABLED: triple space stays spaces');
 }
 
+
+// --- Shadowing-fix regression battery (2026-07-14, keyboard 1.6) ---
+// bale->baleh class: natural typed spellings of high-freq words must not be
+// shadowed by low-freq homographs' auto exact keys or lost skel slots.
+eq(fire('bale'), 'بله ', 'bale -> yes (not ballet)');
+eq(fire('baleh'), 'بله ', 'baleh -> yes');
+eq(fire('doroste'), 'درسته ', 'doroste keeps its -e');
+eq(fire('zohr'), 'ظهر ', 'zohr -> noon');
+eq(fire('zaher'), 'ظاهر ', 'zaher still reachable (displacement guard)');
+eq(fire('azizam'), 'عزیزم ', 'azizam');
+eq(fire('dooset'), 'دوستت ', 'dooset -> doostet (love you)');
+eq(fire('aks'), 'عکس ', 'aks -> photo');
+eq(fire('ax'), 'عکس ', 'ax -> photo');
+eq(fire('akh'), 'آخ ', 'akh unharmed by ax fix (norm-tier guard)');
+eq(fire('felan'), 'فعلا ', 'felan -> for-now');
+eq(fire('folan'), 'فلان ', 'folan still so-and-so (displacement guard)');
+eq(fire('taarof'), 'تعارف ', 'taarof -> the cultural institution');
+eq(fire('taraf'), 'طرف ', 'taraf unharmed (displacement guard)');
+eq(fire('khiaboon'), 'خیابون ', 'khiaboon -> colloquial register');
+eq(fire('mamnoonam'), 'ممنونم ', 'mamnoonam');
+eq(fire('chahar'), 'چهار ', 'chahar -> four');
+eq(fire('kas'), 'کس ', 'kas -> person (not photographer)');
+
 console.log(`\n${pass}/${pass + fail} passed`);
 process.exit(fail ? 1 : 0);

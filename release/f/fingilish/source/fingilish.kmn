@@ -17,7 +17,7 @@ store(&VISUALKEYBOARD) 'fingilish.kvks'
 store(&BITMAP) 'basic_kbdus.ico'
 store(&LAYOUTFILE) 'fingilish.keyman-touch-layout'
 store(&COPYRIGHT) '© 2026 Mattin Tasbihgoo'
-store(&KEYBOARDVERSION) '1.5'
+store(&KEYBOARDVERSION) '1.6'
 store(&TARGETS) 'any'
 
 c IMX: ConvertWord.call_js must be in the same folder as this .kmn
