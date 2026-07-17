@@ -1,6 +1,17 @@
 Fingilish (Phonetic Persian) Change History
 ====================
 
+1.8 (2026-07-17)
+----------------
+* Banner/model interim fix (doc-04 L3/L4): searchTermToKey regenerated from
+  build_dict source by new gen_model_key.py — Persian-index and typed-query
+  paths now both produce converter-tier-3 skeleton keys (104,800-case
+  differential proof gates the build; 36-key hand mirror removed)
+* Name lexicon appended to the banner wordlist (+19,619 entries, 42,123
+  total) at sub-word frequencies so shared keys keep word-first ranking
+* New build gates: gen_model_key.py differential proof + test_model_keys.mjs
+  typed<->Persian key-equality battery (16 pairs incl. all reported names)
+
 1.7 (2026-07-17)
 ----------------
 * Names overhaul: bulk name lexicon (22,153 entries) generated from two
