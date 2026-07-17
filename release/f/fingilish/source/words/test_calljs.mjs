@@ -105,5 +105,38 @@ eq(fire('mamnoonam'), 'ممنونم ', 'mamnoonam');
 eq(fire('chahar'), 'چهار ', 'chahar -> four');
 eq(fire('kas'), 'کس ', 'kas -> person (not photographer)');
 
+
+// --- Names + first-letter-forms battery (2026-07-17, keyboard 1.7) ---
+// User-reported name failures: dict/NAMES fixes
+eq(fire('abbasian'), '\u0639\u0628\u0627\u0633\u06cc\u0627\u0646 ', 'abbasian -> Abbasian (ayn)');
+eq(fire('abasian'), '\u0639\u0628\u0627\u0633\u06cc\u0627\u0646 ', 'abasian variant');
+eq(fire('soraya'), '\u062b\u0631\u06cc\u0627 ', 'soraya -> Soraya (not quickly)');
+eq(fire('sorayya'), '\u062b\u0631\u06cc\u0627 ', 'sorayya variant');
+eq(fire('ameneh'), '\u0622\u0645\u0646\u0647 ', 'ameneh -> madda');
+eq(fire('ava'), '\u0622\u0648\u0627 ', 'ava -> madda');
+eq(fire('farzad'), '\u0641\u0631\u0632\u0627\u062f ', 'farzad -> no first alef');
+eq(fire('azar'), '\u0622\u0632\u0627\u0631 ', 'azar stays the common word (word-wins)');
+eq(fire('aazar'), '\u0622\u0630\u0631 ', 'aazar -> the name (curated aa-key)');
+// Leading apostrophe / Arabizi digit (token regex fix)
+eq(fire("'abbasian"), '\u0639\u0628\u0627\u0633\u06cc\u0627\u0646 ', 'leading apostrophe joins token');
+eq(fire('3abbasian'), '\u0639\u0628\u0627\u0633\u06cc\u0627\u0646 ', 'leading 3 joins token');
+eq(fire("'"), "' ", 'lone apostrophe does not convert');
+eq(fire('3'), '3 ', 'lone digit does not convert');
+// aa-intent: explicit aa never collapsed into a different word
+eq(fire('aameneh'), '\u0622\u0645\u0646\u0647 ', 'aameneh not hijacked by skel');
+eq(fire('aava'), '\u0622\u0648\u0627 ', 'aava');
+eq(fire('aali'), '\u0639\u0627\u0644\u06cc ', 'aali -> excellent (was unreachable)');
+eq(fire('aadi'), '\u0639\u0627\u062f\u06cc ', 'aadi -> normal');
+eq(fire('aashegh'), '\u0639\u0627\u0634\u0642 ', 'aashegh (ayn+alef aa-variant)');
+eq(fire('aalan'), '\u0627\u0644\u0627\u0646 ', 'aalan protected (MANUAL variant)');
+// H8 fallback heuristic on out-of-dict words
+eq(fire('shamzad'), '\u0634\u0645\u0632\u0627\u062f ', 'H8: last-vowel alef only');
+eq(fire('golshanifar'), '\u06af\u0644\u0634\u0627\u0646\u06cc\u0641\u0631 ', 'H8: -ani + -far suffix');
+eq(fire('zarbanipour'), '\u0632\u0631\u0628\u0627\u0646\u06cc\u067e\u0648\u0631 ', 'H8: -ani + -pour suffix');
+eq(fire('vetkarian'), '\u0648\u062a\u06a9\u0627\u0631\u06cc\u0627\u0646 ', 'H8: -ian suffix');
+// Bulk-names spot checks (dataset ingest)
+eq(fire('mohammadi'), '\u0645\u062d\u0645\u062f\u06cc ', 'mohammadi (surname #1)');
+eq(fire('hosseini'), '\u062d\u0633\u06cc\u0646\u06cc ', 'hosseini (surname #2)');
+
 console.log(`\n${pass}/${pass + fail} passed`);
 process.exit(fail ? 1 : 0);

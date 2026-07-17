@@ -86,6 +86,7 @@ def skeleton(s):
 # The first entry is the canonical spelling.
 # ============================================================
 MANUAL = {
+    "عالی": ["aali"],  # fix: was unreachable ("ali" belongs to the name)
     # Function words
     "که": ["ke"], "رو": ["ro", "roo"], "به": ["be"], "من": ["man"],
     "و": ["va", "o"], "از": ["az"], "تو": ["to", "too"], "اون": ["oon", "un"],
@@ -97,7 +98,7 @@ MANUAL = {
     "دیگه": ["dige", "digeh"], "هنوز": ["hanooz", "hanuz"],
     "حالا": ["hala", "haala"], "فقط": ["faghat", "faqat"],
     "خب": ["khob"], "اینجا": ["inja", "injaa"],
-    "اونجا": ["onja", "oonja"], "الان": ["alan", "alaan"],
+    "اونجا": ["onja", "oonja"], "الان": ["alan", "alaan", "aalan"],
     "شاید": ["shayad", "shaayad"], "حتی": ["hata", "hatta"],
     "بعد": ["baad"], "مثل": ["mesl", "mesle"],
     "همین": ["hamin", "hameen"], "پیدا": ["peyda", "peida"],
@@ -404,7 +405,16 @@ NAMES = {
     "دانیال": ["danial", "daaniyaal"],
     "پریسا": ["parisa", "pareesaa"],
     "ایران": ["iran", "eeraan"],
-    "تهران": ["tehran", "tehraan"],
+    "ØªÙØ±Ø§Ù": ["tehran", "tehraan"],
+    # --- user-reported name fixes (2026-07-17) ---
+    "عباسیان": ["abbasian", "abasian"],
+    "ثریا": ["soraya", "sorayya", "sorayeh"],
+    "آمنه": ["ameneh", "amene"],
+    "آوا": ["ava", "aava"],
+    "فرزاد": ["farzad", "farzaad"],
+    "تهرانی": ["tehrani"],  # modern form beats archaic طهرانی in bulk
+    # aazar only: plain "azar" stays with the common word (word-wins policy)
+    "آذر": ["aazar"],
 }
 
 
@@ -485,6 +495,13 @@ def transliterate_for_dict(word):
         # ه — word-final is usually "e" or "eh" (not "h")
         if ch == 'ه' and i == n - 1:
             result += "e"
+            i += 1
+            continue
+
+        # Word-initial \u0639 (ayn) carries its vowel: emit 'a' so
+        # \u0639\u0628\u0627\u0633 -> 'abas...' not 'bas...'. Mid-word stays ''.
+        if ch == '\u0639' and i == 0:
+            result += "a"
             i += 1
             continue
 
@@ -612,6 +629,60 @@ def build_dict():
     # Tier-4 skeleton bank: vowel-stripped keys, highest freq wins.
     # Rescues words whose auto key lost its short vowels (krdi/kardi).
     # -----------------------------------------------------------
+    # -----------------------------------------------------------
+    # Tier 3.5: BULK NAMES from names.tsv (build_names.py output).
+    # WORD-WINS POLICY: only fills keys not already claimed. Never touches
+    # norm_bank or the skeleton bank (zero displacement of word lookups).
+    # Collisions are logged for review, not resolved.
+    # -----------------------------------------------------------
+    names_path = BASE_DIR / "names.tsv"
+    bulk_added = 0
+    collisions = []
+    if names_path.exists():
+        with names_path.open("r", encoding="utf-8") as f:
+            for line in f:
+                parts = line.rstrip("\n").split("\t")
+                if len(parts) != 4:
+                    continue
+                persian, variants, kind, rank = parts
+                if persian in manual_persian:
+                    continue
+                for lat in variants.split(","):
+                    for key in (lat, norm(lat)):
+                        if len(key) < 2 or key in BLOCKLIST:
+                            continue
+                        if key not in result:
+                            result[key] = persian
+                            bulk_added += 1
+                        elif result[key] != persian:
+                            collisions.append((key, persian, result[key], kind, rank))
+        print(f"  Bulk names: {bulk_added:,} keys added, {len(collisions):,} collisions -> existing kept")
+        report = Path.home() / "Documents" / "Fingilish" / "namedata" / "collision_report.txt"
+        try:
+            with report.open("w", encoding="utf-8") as rf:
+                rf.write("key\tname_wanted\tkept_existing\tkind\trank\n")
+                for c in sorted(collisions, key=lambda x: (x[3] != "S", int(x[4]) if x[4].isdigit() and int(x[4]) > 0 else 10**9)):
+                    rf.write("\t".join(c) + "\n")
+        except OSError:
+            pass
+
+    # -----------------------------------------------------------
+    # aa-variant post-pass: words/names starting with ALEF-MADDA (U+0622)
+    # or AYN+ALEF whose key starts with single 'a' also get an 'aa' key,
+    # so explicit "aa" typing (long-A letterform intent) hits the dict
+    # before norm() can collapse it.
+    # -----------------------------------------------------------
+    aa_added = 0
+    for lat, persian in list(result.items()):
+        if not lat.startswith("a") or lat.startswith("aa"):
+            continue
+        if persian.startswith("\u0622") or persian.startswith("\u0639\u0627"):
+            aa_key = "a" + lat
+            if aa_key not in result:
+                result[aa_key] = persian
+                aa_added += 1
+    print(f"  aa-variants: {aa_added:,} keys added")
+
     skel_bank = {}
     for nk, (persian, freq) in norm_bank.items():
         sk = skeleton(nk)
@@ -747,6 +818,25 @@ def main():
  ("dust", "دوست"),
  ("khiaban", "خیابان"),
     ]
+    along = [
+        # Names battery (2026-07-17, keyboard 1.7)
+        ("abbasian", "\u0639\u0628\u0627\u0633\u06cc\u0627\u0646"),
+        ("soraya", "\u062b\u0631\u06cc\u0627"),
+        ("ameneh", "\u0622\u0645\u0646\u0647"),
+        ("ava", "\u0622\u0648\u0627"),
+        ("farzad", "\u0641\u0631\u0632\u0627\u062f"),
+        ("azar", "\u0622\u0632\u0627\u0631"),
+        ("aazar", "\u0622\u0630\u0631"),
+        ("aali", "\u0639\u0627\u0644\u06cc"),
+        ("aadi", "\u0639\u0627\u062f\u06cc"),
+        ("aashegh", "\u0639\u0627\u0634\u0642"),
+        ("aalan", "\u0627\u0644\u0627\u0646"),
+        ("mohammadi", "\u0645\u062d\u0645\u062f\u06cc"),
+        ("hosseini", "\u062d\u0633\u06cc\u0646\u06cc"),
+        ("tehrani", "\u062a\u0647\u0631\u0627\u0646\u06cc"),
+    ]
+    tests.extend([(a, b) for a, b in along])
+    
     ok = 0
     for latin, expected in tests:
         got = lookup(latin)

@@ -76,25 +76,57 @@ function skel(s) {
 }
 
 // --- ALGORITHMIC TRANSLITERATION: for unknown words ---
-// Handles any Latin input. Collapses double consonants.
+// H8 heuristic (eval_translit.mjs, 2026-07-17): last-vowel 'a' written,
+// 'a' before n+vowel/end written (-an/-ani patterns), surname suffix
+// table, all other medial short 'a' unwritten. Scored 29.5% exact-match
+// vs 25.2% for always-alef on 33k human-romanized name/word pairs.
 function translit(s) {
   s = s.toLowerCase();
-  // c → s before e/i/y, else k ('ch' protected, handled as digraph)
   s = s.replace(/c(?=[eiy])/g, 's');
   s = s.replace(/c(?!h)/g, 'k');
   // Collapse double consonants BEFORE transliterating
-  // "mattin" → "matin", "mohammad" → "mohamad"
   s = s.replace(/([^aeiou])\1+/g, '$1');
+
+  // Surname/word suffix table (checked once, longest-ish first)
+  var suffix = '';
+  var SUF = [
+    ['ian',   '\u06CC\u0627\u0646'],
+    ['zadeh', '\u0632\u0627\u062F\u0647'],
+    ['zade',  '\u0632\u0627\u062F\u0647'],
+    ['pour',  '\u067E\u0648\u0631'],
+    ['poor',  '\u067E\u0648\u0631'],
+    ['nejad', '\u0646\u0698\u0627\u062F'],
+    ['nezhad','\u0646\u0698\u0627\u062F'],
+    ['abadi', '\u0622\u0628\u0627\u062F\u06CC'],
+    ['vand',  '\u0648\u0646\u062F'],
+    ['lou',   '\u0644\u0648'],
+    ['loo',   '\u0644\u0648'],
+    ['khah',  '\u062E\u0648\u0627\u0647'],
+    ['far',   '\u0641\u0631']
+  ];
+  for (var si = 0; si < SUF.length; si++) {
+    var suf = SUF[si][0];
+    if (s.length > suf.length + 2 && s.slice(-suf.length) === suf) {
+      if (suf === 'ian' && 'aeiou'.indexOf(s[s.length - 4]) >= 0) { continue; }
+      s = s.slice(0, -suf.length);
+      suffix = SUF[si][1];
+      break;
+    }
+  }
+
+  // Index of the last vowel of the (suffix-stripped) stem
+  var lastVowelIdx = -1;
+  for (var vi = s.length - 1; vi >= 0; vi--) {
+    if ('aeiou'.indexOf(s[vi]) >= 0) { lastVowelIdx = vi; break; }
+  }
 
   var out = '';
   var i = 0;
   var len = s.length;
-  // Digraphs (check first, longest match)
   var di = {
     'sh':'\u0634','ch':'\u0686','zh':'\u0698','kh':'\u062E',
     'gh':'\u063A','ph':'\u0641'
   };
-  // Single consonants
   var co = {
     'b':'\u0628','p':'\u067E','t':'\u062A','s':'\u0633',
     'j':'\u062C','d':'\u062F','z':'\u0632','r':'\u0631',
@@ -102,71 +134,54 @@ function translit(s) {
     'm':'\u0645','n':'\u0646','v':'\u0648','w':'\u0648',
     'h':'\u0647','y':'\u06CC','q':'\u0642','x':'\u062E'
   };
-  // Vowel handling is context-dependent
   while (i < len) {
-    // Try digraph first
     if (i + 1 < len) {
       var pair = s[i] + s[i+1];
       if (di[pair]) { out += di[pair]; i += 2; continue; }
     }
     var c = s[i];
-    // Consonants
-    if (co[c]) {
-      out += co[c];
-    }
-    // Vowels — context-dependent
+    if (co[c]) { out += co[c]; }
     else if (c === 'a') {
-      // Word-initial 'aa' → آ (long alef with madda)
       if (i === 0 && i + 1 < len && s[i+1] === 'a') {
         out += '\u0622'; i += 2; continue;
       }
-      // 'aa' elsewhere → single alef
       if (i + 1 < len && s[i+1] === 'a') {
         out += '\u0627'; i += 2; continue;
       }
-      // Single 'a' → alef, always (user rule: a is alef, not just aa)
-      out += '\u0627';
+      if (i === 0) { out += '\u0627'; }
+      else if (i === lastVowelIdx) { out += '\u0627'; }
+      else if (s[i+1] === 'n' && (i+2 >= len || 'aeiou'.indexOf(s[i+2]) >= 0)) {
+        out += '\u0627';
+      }
+      // else: unwritten short a
     }
     else if (c === 'o') {
-      // 'oo' → vav (long vowel: joon→جون); word-initial 'oo' → او
       if (i + 1 < len && s[i+1] === 'o') {
         out += (i === 0) ? '\u0627\u0648' : '\u0648';
         i += 2; continue;
       }
-      // Word-initial 'o' → alef+vav
       if (i === 0) { out += '\u0627\u0648'; }
-      // Word-final 'o' is a written vav (boro→\u0628\u0631\u0648, filmo)
       else if (i === len - 1) { out += '\u0648'; }
-      // Otherwise skip (short vowel)
     }
     else if (c === 'i') {
-      // Word-initial → alef+ya
       if (i === 0) { out += '\u0627\u06CC'; }
-      // Otherwise → ya
       else { out += '\u06CC'; }
     }
     else if (c === 'e') {
-      // 'ee' → ya (long vowel: azeez→عزیز spelled ازیز)
       if (i + 1 < len && s[i+1] === 'e') {
         out += (i === 0) ? '\u0627\u06CC' : '\u06CC';
         i += 2; continue;
       }
-      // fallthrough to existing single-'e' handling below
       if (i === 0) { out += '\u0627'; }
       else if (i === len - 1) { out += '\u0647'; }
-      // Otherwise skip (short vowel)
     }
-    else if (c === 'u') {
-      // u → vav
-      out += '\u0648';
-    }
-    // Arabizi: 2 = hamze, 3 = eyn; apostrophe = eyn
+    else if (c === 'u') { out += '\u0648'; }
     else if (c === '2') { out += '\u0621'; }
     else if (c === '3') { out += '\u0639'; }
     else if (c === "'" || c === '\u2019') { out += '\u0639'; }
     i++;
   }
-  return out || s;
+  return (out + suffix) || s;
 }
 
 // --- MAIN ---
@@ -194,7 +209,7 @@ if (keyEvt && keyEvt.Lcode) {
 }
 
 var before = target.getTextBeforeCaret();
-var m = before.match(/([a-zA-Z][a-zA-Z'\u201923]*)$/);
+var m = before.match(/((?:['\u201923])?[a-zA-Z][a-zA-Z'\u201923]*)$/);
 
 // Double-space → period: a quick second space after a completed word
 // becomes ". " (iOS convention). Timestamp lives on the global object
@@ -237,9 +252,13 @@ var persian = hasOwn.call(D, lowerWord) ? D[lowerWord] : null;
 // long vowels (sa'at → saat must hit the exact key, not norm to 'sat')
 var bare = lowerWord.replace(/['\u201923]/g, '');
 if (!persian && bare !== lowerWord && hasOwn.call(D, bare)) { persian = D[bare]; }
+// Explicit 'aa' start = user forcing the long-A letterform. If the
+// exact/bare tiers missed, do NOT let norm() collapse aa->a into a
+// different word; fall through to translit (aa -> ALEF-MADDA).
+var aaIntent = bare.indexOf('aa') === 0;
 var nw = norm(lowerWord);
-if (!persian && hasOwn.call(D, nw)) { persian = D[nw]; }
-if (!persian) {
+if (!persian && !aaIntent && hasOwn.call(D, nw)) { persian = D[nw]; }
+if (!persian && !aaIntent) {
   var sk = skel(nw);
   if (hasOwn.call(S, sk)) { persian = S[sk]; }
 }

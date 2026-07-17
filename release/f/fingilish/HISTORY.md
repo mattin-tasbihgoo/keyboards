@@ -1,6 +1,32 @@
 Fingilish (Phonetic Persian) Change History
 ====================
 
+1.7 (2026-07-17)
+----------------
+* Names overhaul: bulk name lexicon (22,153 entries) generated from two
+  Apache-2.0 datasets (persian-gender-by-name, iranian-surname-frequencies)
+  via new build_names.py; word-wins collision policy (names never displace
+  existing word keys); curated fixes for user-reported names (Abbasian,
+  Soraya, Ameneh, Ava, Farzad, Azar-the-name via aazar)
+* Token regex accepts leading apostrophe / Arabizi 2/3, so 'abbas and 3ali
+  convert with correct initial ayn/hamza
+* Explicit "aa" start is treated as long-A letterform intent: aa-variant
+  dictionary keys emitted for ALEF-MADDA and AYN+ALEF words (aali, aadi,
+  aashegh, aameneh...), and runtime skips norm/skel collapse for aa- words
+* transliterate_for_dict: word-initial ayn now emits 'a' (abasi not basi);
+  fixes unreachable words (aali) and improves all ayn-initial name keys
+* Fallback transliteration upgraded to the H8 heuristic (chosen by new
+  eval_translit.mjs harness over 33k human-romanized pairs: 29.5% vs 25.2%
+  exact match): last-vowel alef, -an/-ani alef, surname suffix table
+  (-ian/-zadeh/-pour/-nejad/-abadi/-vand/-lou/-khah/-far), other medial
+  short 'a' unwritten
+* Tests: dict verification 142 cases, e2e harness 72 cases (both gate build.sh)
+
+1.6 (2026-07-15)
+----------------
+* Exact-tier shadowing fix (bale class): ~40 MANUAL entries + displacement
+  guards; model.ts mirrors 36 keys; tests 75->128 (dict) and 29->47 (e2e)
+
 1.5 (2026-07-13)
 ----------------
 * Emoji key replaces the in-keyboard globe on the bottom row of every layer
