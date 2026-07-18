@@ -1,6 +1,13 @@
 Fingilish (Phonetic Persian) Change History
 ====================
 
+2.1 (2026-07-17)
+----------------
+* Banner completions: predict() offers up to 3 dictionary words the current
+  token could become (sorted-key prefix scan, closest-first, zero added
+  payload) — multi-chip suggestions return, names reachable mid-typing
+* Suggestion cap widened to 8; battery grown to 23 cases
+
 2.0 (2026-07-17)
 ----------------
 * BANNER REBUILT on custom-1.0 (Stage 4): predict() performs direct

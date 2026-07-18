@@ -7,7 +7,7 @@ store(&VISUALKEYBOARD) 'fingilish.kvks'
 store(&BITMAP) 'basic_kbdus.ico'
 store(&LAYOUTFILE) 'fingilishlatin.keyman-touch-layout'
 store(&COPYRIGHT) '© 2026 Mattin Tasbihgoo'
-store(&KEYBOARDVERSION) '2.0'
+store(&KEYBOARDVERSION) '2.1'
 store(&TARGETS) 'any'
 
 

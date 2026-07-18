@@ -39,8 +39,10 @@ eq(tops('azar').includes(per.azarName), 'azar list includes the NAME (alternate)
 eq(tops('bale')[0] === per.bale, 'bale top = yes', U(tops('bale')));
 eq(tops('hastam')[0] === per.hastam, 'hastam top = hastam', U(tops('hastam')));
 eq(tops('shamzad').includes(per.shamzad), 'unknown word offers literal translit', U(tops('shamzad')));
-// literal == winner dedups to ONE clean chip (ideal case)
-eq(tops('salam').length === 1, 'salam: literal==dict dedups to single chip', U(tops('salam')));
+// literal == winner dedups (no duplicate chip), completions may follow
+const sl = tops('salam');
+eq(sl[0] === per.salam && sl.filter(x => x === per.salam).length === 1 && sl.length >= 2,
+   'salam: top chip, deduped literal, completions present', U(sl));
 // literal != winner -> both offered
 const kb = tops('khiaboon');
 eq(kb.length >= 2 && kb[0] === '\u062E\u06CC\u0627\u0628\u0648\u0646', 'khiaboon: dict top + differing literal', U(kb));
@@ -64,5 +66,14 @@ eq(m.predict(T0, ctx('\u0633\u0644\u0627\u0645 ')).length === 0, 'after conversi
 eq(m.wordbreak(ctx('hey salam')) === 'salam', 'wordbreak returns trailing token');
 eq(m.configure({ maxLeftContextCodePoints: 32 }).leftContextCodePoints === 32, 'configure mirrors capabilities');
 
+// completions: partial word offers what it could become
+const kh = tops('khoo');
+eq(kh.length >= 2, 'khoo offers completions', U(kh));
+const sor = tops('sora');
+eq(sor.length >= 2, 'sora offers completions (names reachable mid-typing)', U(sor));
+// completions never displace the winner
+eq(tops('salam')[0] === per.salam && tops('bale')[0] === per.bale, 'winners stay on top with completions active');
+// cap respected
+eq(tops('mo').length <= 8, 'suggestion cap respected', String(tops('mo').length));
 console.log(`${pass}/${pass + fail} passed`);
 process.exit(fail ? 1 : 0);
