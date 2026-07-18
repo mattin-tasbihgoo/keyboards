@@ -243,24 +243,41 @@ var rawWord = m[1];
 var wordLen = rawWord.length;
 var lowerWord = rawWord.toLowerCase();
 
-// Lookup: 1) exact → 2) normalized → 3) skeleton → 4) algorithmic fallback
+// Lookup: 1) exact → 2) bare → 3) normalized → 4) skeleton, shared with the
+// -em refinement below; 5) algorithmic fallback.
 // hasOwnProperty guards: bare D[w] resolves inherited Object.prototype
 // members (typing "constructor" would insert function source!)
 var hasOwn = Object.prototype.hasOwnProperty;
-var persian = hasOwn.call(D, lowerWord) ? D[lowerWord] : null;
-// Bare tier: apostrophe/Arabizi digits stripped, before norm collapses
-// long vowels (sa'at → saat must hit the exact key, not norm to 'sat')
-var bare = lowerWord.replace(/['\u201923]/g, '');
-if (!persian && bare !== lowerWord && hasOwn.call(D, bare)) { persian = D[bare]; }
-// Explicit 'aa' start = user forcing the long-A letterform. If the
-// exact/bare tiers missed, do NOT let norm() collapse aa->a into a
-// different word; fall through to translit (aa -> ALEF-MADDA).
-var aaIntent = bare.indexOf('aa') === 0;
-var nw = norm(lowerWord);
-if (!persian && !aaIntent && hasOwn.call(D, nw)) { persian = D[nw]; }
-if (!persian && !aaIntent) {
-  var sk = skel(nw);
-  if (hasOwn.call(S, sk)) { persian = S[sk]; }
+function lookupTiers(w) {
+  if (hasOwn.call(D, w)) { return D[w]; }
+  // Bare tier: apostrophe/Arabizi digits stripped, before norm collapses
+  // long vowels (sa'at → saat must hit the exact key, not norm to 'sat')
+  var b = w.replace(/['\u201923]/g, '');
+  if (b !== w && hasOwn.call(D, b)) { return D[b]; }
+  // Explicit 'aa' start = user forcing the long-A letterform. If the
+  // exact/bare tiers missed, do NOT let norm() collapse aa->a into a
+  // different word; fall through to translit (aa -> ALEF-MADDA).
+  if (b.indexOf('aa') === 0) { return null; }
+  var n2 = norm(w);
+  if (hasOwn.call(D, n2)) { return D[n2]; }
+  var s2 = skel(n2);
+  if (hasOwn.call(S, s2)) { return S[s2]; }
+  return null;
+}
+var persian = lookupTiers(lowerWord);
+// Colloquial we-form: a typed final -em (kardem, raftem, hastem) means the
+// -im conjugation when both forms share a stem. skel() strips the 'e' and
+// collapses kardem onto کردم; but the user TYPED the disambiguating vowel
+// ('e', not 'a'). Prefer the -im variant iff it equals the plain result
+// with YEH inserted before the final MEEM (same stem, we-form vs I-form).
+// Non-verbs are provably untouched: salem→سالم keeps سالم (سلیم fails the
+// stem test), moallem keeps its current mapping.
+if (persian && lowerWord.length > 3 && lowerWord.slice(-2) === 'em'
+    && persian.slice(-1) === '\u0645') {
+  var emVariant = lookupTiers(lowerWord.slice(0, -2) + 'im');
+  if (emVariant && emVariant === persian.slice(0, -1) + '\u06CC\u0645') {
+    persian = emVariant;
+  }
 }
 if (!persian) { persian = translit(lowerWord); }
 

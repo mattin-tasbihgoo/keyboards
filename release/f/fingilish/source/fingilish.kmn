@@ -17,7 +17,7 @@ store(&VISUALKEYBOARD) 'fingilish.kvks'
 store(&BITMAP) 'basic_kbdus.ico'
 store(&LAYOUTFILE) 'fingilish.keyman-touch-layout'
 store(&COPYRIGHT) '© 2026 Mattin Tasbihgoo'
-store(&KEYBOARDVERSION) '2.2'
+store(&KEYBOARDVERSION) '2.3'
 store(&TARGETS) 'any'
 
 c IMX: ConvertWord.call_js must be in the same folder as this .kmn
@@ -32,6 +32,12 @@ c Conversion triggers: Space and Enter
 c When pressed, the JavaScript engine converts the preceding
 c Latin word to Persian.
 c ============================================================
+
+c Inert shift (2026-07-18): the shift layer breaks the fa-mode experience
+c and capitals carry no meaning in transliteration (lookup lowercases
+c anyway). The touch key keeps its glyph but maps to T_FNGSHIFT, consumed
+c here as a deterministic no-op. fingilishlatin keeps real shift.
++ [T_FNGSHIFT] > nul
 
 + [K_SPACE] > call(fnConvert)
 + [K_ENTER] > call(fnConvert)

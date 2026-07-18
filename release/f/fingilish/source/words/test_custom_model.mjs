@@ -75,6 +75,18 @@ eq(sor.length >= 2, 'sora offers completions (names reachable mid-typing)', U(so
 eq(tops('salam')[0] === per.salam && tops('bale')[0] === per.bale, 'winners stay on top with completions active');
 // cap respected
 eq(tops('mo').length <= 8, 'suggestion cap respected', String(tops('mo').length));
+// --- we-form ranking: kardem's winner is the -im conjugation (typed 'e'
+// disambiguates); the I-form stays as the first alternate chip.
+{
+  const d = m.predict(T0, ctx('kardem'));
+  const texts = d.map(x => x.sample.transform.insert);
+  eq(texts[0] === '\u06A9\u0631\u062F\u06CC\u0645' && texts[1] === '\u06A9\u0631\u062F\u0645',
+     'kardem: we-form first, I-form second', JSON.stringify(texts.slice(0,3)));
+  const d2 = m.predict(T0, ctx('kardam'));
+  eq(d2[0].sample.transform.insert === '\u06A9\u0631\u062F\u0645',
+     'kardam: I-form winner untouched', '');
+}
+
 // --- Compositor dedupe property (engine contract, keyman lm-worker predict-helpers.ts) ---
 // The engine keys each suggestion by wordbreak(applyTransform(suggestion.transform, context)).
 // If any two suggestions share a key -- or key to '' -- they merge into one banner chip.

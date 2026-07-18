@@ -138,5 +138,16 @@ eq(fire('vetkarian'), '\u0648\u062a\u06a9\u0627\u0631\u06cc\u0627\u0646 ', 'H8: 
 eq(fire('mohammadi'), '\u0645\u062d\u0645\u062f\u06cc ', 'mohammadi (surname #1)');
 eq(fire('hosseini'), '\u062d\u0633\u06cc\u0646\u06cc ', 'hosseini (surname #2)');
 
+// --- Colloquial we-form: typed -em prefers the -im conjugation when both
+// forms share the stem (YEH before final MEEM). The typed 'e' vs 'a' is the
+// user's own disambiguation; non-verbs (salem) must be untouched.
+eq(fire('kardem'), '\u06A9\u0631\u062F\u06CC\u0645 ', 'kardem -> we-form');
+eq(fire('kardam'), '\u06A9\u0631\u062F\u0645 ', 'kardam -> I-form untouched');
+eq(fire('raftem'), '\u0631\u0641\u062A\u06CC\u0645 ', 'raftem -> we-form');
+eq(fire('goftem'), '\u06AF\u0641\u062A\u06CC\u0645 ', 'goftem -> we-form');
+eq(fire('hastem'), '\u0647\u0633\u062A\u06CC\u0645 ', 'hastem -> we-form');
+eq(fire('mikonem'), '\u0645\u06CC\u06A9\u0646\u06CC\u0645 ', 'mikonem -> we-form');
+eq(fire('salem'), '\u0633\u0627\u0644\u0645 ', 'salem non-verb untouched');
+
 console.log(`\n${pass}/${pass + fail} passed`);
 process.exit(fail ? 1 : 0);

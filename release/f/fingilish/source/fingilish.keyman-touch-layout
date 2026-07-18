@@ -662,11 +662,10 @@
             "id": 3,
             "key": [
               {
-                "id": "K_SHIFT",
+                "id": "T_FNGSHIFT",
                 "text": "⇧",
                 "width": "130",
-                "sp": 1,
-                "nextlayer": "shift"
+                "sp": 1
               },
               {
                 "id": "K_Z",

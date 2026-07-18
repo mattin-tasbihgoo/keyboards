@@ -98,8 +98,33 @@ class FingilishModel {
       }
     }
 
+    // Colloquial we-form (mirrors ConvertWord.call_js): typed final -em
+    // means the -im conjugation when the variant equals the winner with YEH
+    // inserted before the final MEEM. Winner becomes the -im form; the
+    // I-form stays in the banner as the first alternate.
+    var emAlt = '';
+    if (winner && lower.length > 3 && lower.slice(-2) === 'em'
+        && winner.slice(-1) === '\u0645') {
+      var vLower = lower.slice(0, -2) + 'im';
+      var v = '';
+      if (hasOwn.call(D, vLower)) { v = D[vLower]; }
+      else {
+        var vn = norm(vLower);
+        if (hasOwn.call(D, vn)) { v = D[vn]; }
+        else {
+          var vs = skel(vn);
+          if (hasOwn.call(S, vs)) { v = S[vs]; }
+        }
+      }
+      if (v && v === winner.slice(0, -1) + '\u06CC\u0645') {
+        emAlt = winner;   // keep the I-form reachable
+        winner = v;
+      }
+    }
+
     var out: string[] = [];
     if (winner) { out.push(winner); }
+    if (emAlt && out.indexOf(emAlt) < 0) { out.push(emAlt); }
     var altKeys = [lower, bare, matchKey];
     for (var ai = 0; ai < altKeys.length; ai++) {
       var ak = altKeys[ai];
