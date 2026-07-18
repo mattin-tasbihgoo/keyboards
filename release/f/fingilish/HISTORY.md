@@ -1,6 +1,21 @@
 Fingilish (Phonetic Persian) Change History
 ====================
 
+2.0 (2026-07-17)
+----------------
+* BANNER REBUILT on custom-1.0 (Stage 4): predict() performs direct
+  dictionary lookup using the converter's OWN generated functions and data
+  (fng_model_fns.js extracted verbatim from ConvertWord.call_js;
+  fng_model_data.js = the converter dictionary + ranked alternates) — one
+  brain for banner and conversion, deterministic, all 22k names included
+* The literal transliteration is always offered when it differs from the
+  dictionary answer, so the banner shows exactly what you are spelling
+* Ranked alternates: surname-frequency collisions + curated MANUAL_ALTS
+  (azar shows the word first, the name one tap away)
+* New gate: test_custom_model.mjs runs the predict() battery (19 cases:
+  correctness, determinism, transform mechanics, live partial-word preview,
+  empty/Persian-context guards) against the COMPILED model artifact
+
 1.9 (2026-07-17)
 ----------------
 * REVERT the 1.8 banner/model changes (searchTermToKey + wordlist names):

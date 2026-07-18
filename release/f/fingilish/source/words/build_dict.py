@@ -665,6 +665,29 @@ def build_dict():
                     rf.write("\t".join(c) + "\n")
         except OSError:
             pass
+        # Alternates for the custom-1.0 banner model: for keys where a name
+        # lost to an existing entry, record up to 3 ranked alternates.
+        # Manual alternates: curated names that deliberately ceded their
+        # plain key to a common word (word-wins) but must stay one tap away.
+        MANUAL_ALTS = {
+            "azar": ["آذر"],   # Azar the name/month behind the word
+        }
+        alts = {k: list(v) for k, v in MANUAL_ALTS.items()}
+        # Bulk alternates: SURNAMES ONLY (frequency-ranked, real signal);
+        # first-name dataset rows carry no frequency and include junk
+        # spellings, so they are excluded from the banner's alternates.
+        for key, wanted, kept, kind, rank in sorted(
+                collisions, key=lambda x: (x[3] != "S",
+                    int(x[4]) if x[4].isdigit() and int(x[4]) > 0 else 10**9)):
+            if kind != "S":
+                continue
+            lst = alts.setdefault(key, [])
+            if wanted not in lst and len(lst) < 3:
+                lst.append(wanted)
+        import json as _json
+        with (BASE_DIR / "fng_model_alts.json").open("w", encoding="utf-8") as af:
+            _json.dump(alts, af, ensure_ascii=False)
+        print(f"  Alternates: {len(alts):,} keys -> fng_model_alts.json")
 
     # -----------------------------------------------------------
     # aa-variant post-pass: words/names starting with ALEF-MADDA (U+0622)

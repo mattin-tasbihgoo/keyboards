@@ -23,6 +23,10 @@ fi
 # 1. Dictionary + conversion engine
 # e2e harness (test_calljs.mjs) gates the build: non-zero exit aborts under set -e
 ( cd source/words && python3 build_dict.py && python3 build_calljs.py && node test_calljs.mjs )
+
+# 1b. Custom-1.0 model sources: emit dict/fns from the converter's own build
+#     products (single source, doc-04 L3/L4/L6)
+( cd source/words && python3 model_emit.py )
 cp source/words/ConvertWord.call_js source/ConvertWord.call_js
 
 # 2. Compile keyboards (kmc drops outputs next to source)
@@ -41,6 +45,8 @@ kmc build source/fingilish.kps --out-file build/fingilish.kmp
 
 # 4. Lexical model
 kmc build source/mattin.fa.fingilish.model.ts --out-file build/mattin.fa.fingilish.model.js
+# Gate: the COMPILED model artifact must pass the predict() battery
+node source/words/test_custom_model.mjs build/mattin.fa.fingilish.model.js
 kmc build source/mattin.fa.fingilish.model.kps --out-file build/mattin.fa.fingilish.model.kmp
 
 echo
