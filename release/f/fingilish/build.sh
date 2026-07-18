@@ -23,12 +23,6 @@ fi
 # 1. Dictionary + conversion engine
 # e2e harness (test_calljs.mjs) gates the build: non-zero exit aborts under set -e
 ( cd source/words && python3 build_dict.py && python3 build_calljs.py && node test_calljs.mjs )
-
-# 1b. Banner model key + name lexicon (all three gate the build):
-#     append names to wordlist (idempotent), regenerate searchTermToKey from
-#     build_dict source (differential proof inside), assert typed<->Persian
-#     key equality (doc-04 L4 gate).
-( cd source/words && python3 append_names_wordlist.py && python3 gen_model_key.py && node test_model_keys.mjs )
 cp source/words/ConvertWord.call_js source/ConvertWord.call_js
 
 # 2. Compile keyboards (kmc drops outputs next to source)

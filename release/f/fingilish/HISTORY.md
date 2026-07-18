@@ -1,6 +1,14 @@
 Fingilish (Phonetic Persian) Change History
 ====================
 
+1.9 (2026-07-17)
+----------------
+* REVERT the 1.8 banner/model changes (searchTermToKey + wordlist names):
+  skeleton keys violate trie-1.0 prefix-monotonicity (doc-04 L6) — incremental
+  search corrupted, banner showed correction noise / dropped targets / went
+  empty. Banner returns to 1.7 behavior; converter (names, H8, aa-intent,
+  regex) fully retained. custom-1.0 migration is the successor.
+
 1.8 (2026-07-17)
 ----------------
 * Banner/model interim fix (doc-04 L3/L4): searchTermToKey regenerated from
