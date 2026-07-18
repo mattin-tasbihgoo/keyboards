@@ -75,5 +75,26 @@ eq(sor.length >= 2, 'sora offers completions (names reachable mid-typing)', U(so
 eq(tops('salam')[0] === per.salam && tops('bale')[0] === per.bale, 'winners stay on top with completions active');
 // cap respected
 eq(tops('mo').length <= 8, 'suggestion cap respected', String(tops('mo').length));
+// --- Compositor dedupe property (engine contract, keyman lm-worker predict-helpers.ts) ---
+// The engine keys each suggestion by wordbreak(applyTransform(suggestion.transform, context)).
+// If any two suggestions share a key -- or key to '' -- they merge into one banner chip.
+// This is the exact bug class that collapsed the 2.1 banner to a single chip on device.
+function applyTransform(t, left) {
+  return left.slice(0, Math.max(0, left.length - (t.deleteLeft || 0))) + (t.insert || '');
+}
+for (const w of ['salam', 'chetori', 'asabani', 'hastam', 'khiaboon', 'khoo', 'sora', 'farzad']) {
+  const dist = m.predict(T0, ctx(w));
+  const keys = dist.map(x => m.wordbreak(ctx(applyTransform(x.sample.transform, w))));
+  const nonEmpty = keys.every(k => k && k.length > 0);
+  const distinct = new Set(keys).size === keys.length;
+  eq(nonEmpty && distinct && dist.length >= 2,
+     `compositor-dedupe: ${w} -> ${dist.length} chips, keys distinct+nonempty`,
+     JSON.stringify(keys.map(k => [...k].map(c => c.codePointAt(0).toString(16)).join(','))));
+}
+// typed-context wordbreak still returns the Latin token (processSimilarity path)
+eq(m.wordbreak(ctx('\u0633\u0644\u0627\u0645 hastam')) === 'hastam', 'wordbreak: typed mixed context -> latin token');
+// post-conversion Persian tail tokenizes (dedupe path)
+eq(m.wordbreak(ctx('\u0633\u0644\u0627\u0645')) === '\u0633\u0644\u0627\u0645', 'wordbreak: persian tail -> persian word');
+
 console.log(`${pass}/${pass + fail} passed`);
 process.exit(fail ? 1 : 0);

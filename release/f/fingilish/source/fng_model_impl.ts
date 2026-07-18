@@ -56,7 +56,16 @@ class FingilishModel {
   }
 
   wordbreak(context: any): string {
-    return this.tokenOf(context && context.left);
+    // The engine's ModelCompositor dedupes suggestions by calling wordbreak on
+    // the context AFTER applying each suggestion's transform -- i.e. on our
+    // Persian OUTPUT. A Latin-only token here keys every suggestion to '' and
+    // collapses the banner to one chip. wordbreak must therefore tokenize both
+    // scripts. (Gated in test_custom_model.mjs: compositor dedupe property.)
+    var left = ((context && context.left) || '').replace(/[\u2066-\u2069]/g, '');
+    var latin = this.tokenOf(left);
+    if (latin) { return latin; }
+    var m = left.match(/[\u0600-\u06FF\u200C]+$/);
+    return m ? m[0] : '';
   }
 
   predict(transform: any, context: any): any {
