@@ -1,6 +1,27 @@
 Fingilish (Phonetic Persian) Change History
 ====================
 
+2.4 (2026-07-18)
+----------------
+* Removed the shift layer from all touch forms; KMW auto-caps was entering
+  the still-armed layer (stray `?` via [SHIFT K_SLASH], banner disruption).
+  Inert T_FNGSHIFT + SHIFT/CAPS nul insurance rules.
+
+2.3 (2026-07-18)
+----------------
+* Colloquial we-form: typed final -em prefers the -im conjugation when the
+  variant equals the plain result with YEH before the final MEEM
+  (kardem/raftem/hastem/mikonem); shared lookupTiers() in the call_js
+  template, mirrored in model predict. Inert shift key (default layer).
+* Gates: e2e 72 -> 79, model battery 33 -> 35.
+
+2.2 (2026-07-18)
+----------------
+* Script-aware wordbreak: the engine's ModelCompositor dedupes suggestions
+  by wordbreak(applyTransform(...)) on the Persian OUTPUT; the Latin-only
+  token keyed every suggestion to '' and collapsed the banner to one chip.
+  Permanent compositor-dedupe property gate (battery 23 -> 33).
+
 2.1 (2026-07-17)
 ----------------
 * Banner completions: predict() offers up to 3 dictionary words the current
