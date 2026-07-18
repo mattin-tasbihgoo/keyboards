@@ -17,7 +17,7 @@ store(&VISUALKEYBOARD) 'fingilish.kvks'
 store(&BITMAP) 'basic_kbdus.ico'
 store(&LAYOUTFILE) 'fingilish.keyman-touch-layout'
 store(&COPYRIGHT) '© 2026 Mattin Tasbihgoo'
-store(&KEYBOARDVERSION) '2.3'
+store(&KEYBOARDVERSION) '2.4'
 store(&TARGETS) 'any'
 
 c IMX: ConvertWord.call_js must be in the same folder as this .kmn
@@ -38,6 +38,11 @@ c and capitals carry no meaning in transliteration (lookup lowercases
 c anyway). The touch key keeps its glyph but maps to T_FNGSHIFT, consumed
 c here as a deterministic no-op. fingilishlatin keeps real shift.
 + [T_FNGSHIFT] > nul
+c Insurance for engine-supplied modifier state (auto-caps attempts): the
+c inert key must be a no-op in every state, or KMW's unmatched-key default
+c can emit the keycap text into the buffer.
++ [SHIFT T_FNGSHIFT] > nul
++ [CAPS T_FNGSHIFT] > nul
 
 + [K_SPACE] > call(fnConvert)
 + [K_ENTER] > call(fnConvert)
